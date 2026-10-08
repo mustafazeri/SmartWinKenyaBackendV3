@@ -107,5 +107,25 @@ router.post("/login", async (req, res) => {
     }
 
 });
+// Get referral code
+ router.get("/referral/:username", async (req, res) => {
+   try {           const user = await User.findOne({
+                       username: req.params.username
+                              });
+                                      if (!user) {                                                    return res.json({
+                                                                   success: false,
+                                                                                  message: "User not found."
+                                                                                               });
+                                                                                                        }
+                                                                                                                res.json({                                                                                                                             success: true,
+                                                                                                                                        referralCode: user.referralCode
+                                                                                                                                               });
+                                                                                                                                                    } catch (err) {
+                                                                                                                                                            res.json({
+                                                                                                                                                                         success: false,
+                                                                                                                                                                                    message: "Server error."
+                                                                                                                                                                                            });
+                                                                                                                                                                                               }
+                                                                                                                                                                                               });
 
 module.exports = router;
