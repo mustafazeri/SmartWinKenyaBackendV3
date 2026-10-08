@@ -75,7 +75,9 @@ console.log("ACCESS TOKEN:", accessToken);
         }
       }
     );
+console.log("STK RESPONSE:", stkResponse.data);
 
+	  
     return res.json(stkResponse.data);
 
   } catch (err) {
