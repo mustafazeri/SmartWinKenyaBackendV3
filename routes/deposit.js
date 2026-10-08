@@ -55,6 +55,7 @@ console.log("ACCESS TOKEN:", accessToken);
     ).toString("base64");
 
     const stkResponse = await axios.post(
+	    const Payment = require("../models/Payment");
       "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
       {
         BusinessShortCode: process.env.BUSINESS_SHORT_CODE,
@@ -77,7 +78,15 @@ console.log("ACCESS TOKEN:", accessToken);
     );
 console.log("STK RESPONSE:", stkResponse.data);
 
-	  
+await Payment.create({
+	    username,
+	    phone: phoneNumber,
+	    checkoutRequestID: stkResponse.data.CheckoutRequestID,
+	    amount: Number(amount),
+	    status: "Pending"
+});
+
+
     return res.json(stkResponse.data);
 
   } catch (err) {
