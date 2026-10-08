@@ -40,6 +40,27 @@ app.post("/callback", async (req, res) => {
 			                if (user) {
 
 			            user.coins += payment.amount;
+						// First deposit referral reward
+						// if (user.referredBy && !user.referralRewardPaid) {
+						//
+						//     const referrer = await User.findOne({
+						//             referralCode: user.referredBy
+						//                 });
+						//
+						//                     if (referrer) {
+						//
+						//                             referrer.coins += 20;
+						//                                     user.coins += 20;
+						//
+						//                                             await referrer.save();
+						//
+						//                                                     user.referralRewardPaid = true;
+						//
+						//                                                             console.log(
+						//                                                                         `🎁 Referral reward: ${referrer.username} and ${user.username} received 20 coins each`
+						//                                                                                 );
+						//                                                                                     }
+						//                                                                                     }
 
 					await user.save();
 
