@@ -127,6 +127,10 @@ exports.answerQuestion = async (req, res) => {
 		            if (timeTaken > 10) {
 
 				                game.status = "lost";
+				    const user = await User.findOne({ username: game.username });
+				    user.gamesPlayed += 1;
+				    user.gamesLost += 1;
+				    await user.save();
 
 				                await game.save();
 
@@ -153,6 +157,10 @@ exports.answerQuestion = async (req, res) => {
 		            if (answer != question.answer) {
 
 				                game.status = "lost";
+				    const user = await User.findOne({ username: game.username });
+				    user.gamesPlayed += 1;
+				    user.gamesLost += 1;
+				    await user.save();
 
 				                await game.save();
 
@@ -176,6 +184,8 @@ exports.answerQuestion = async (req, res) => {
 							            });
 
 				                user.coins += game.reward;
+				    user.gamesPlayed += 1;
+				    user.gamesWon += 1;
 
 				                await user.save();
 

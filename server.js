@@ -6,6 +6,7 @@ const cors = require("cors");
 const User = require("./models/User");
 const Payment = require("./models/Payment");
 const authRoutes = require("./routes/auth");
+const adminRoutes = require("./routes/admin");
 const gameRoutes = require("./routes/game");
 const depositRoutes = require("./routes/deposit");
 const app = express();
@@ -13,6 +14,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use("/auth", authRoutes);
+app.use("/admin", adminRoutes);
 app.use("/game", gameRoutes);
 app.use("/deposit", depositRoutes);
 app.post("/callback", async (req, res) => {
