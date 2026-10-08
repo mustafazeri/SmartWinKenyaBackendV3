@@ -1,6 +1,6 @@
 const express = require("express");
 const axios = require("axios");
-
+const Payment = require("../models/Payment");
 const router = express.Router();
 
 router.post("/", async (req, res) => {
@@ -55,7 +55,6 @@ console.log("ACCESS TOKEN:", accessToken);
     ).toString("base64");
 
     const stkResponse = await axios.post(
-	    const Payment = require("../models/Payment");
       "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
       {
         BusinessShortCode: process.env.BUSINESS_SHORT_CODE,
