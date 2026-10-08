@@ -60,8 +60,8 @@ app.post("/callback", async (req, res) => {
 		            ResultCode: 0,
 		            ResultDesc: "Accepted"
 		        });
-	    }});
-});
+	}
+});		
 app.get("/", (req, res) => {
 	    res.json({
 		            success: true,
