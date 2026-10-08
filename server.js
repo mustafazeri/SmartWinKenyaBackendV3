@@ -13,6 +13,15 @@ app.use(express.json());
 app.use("/auth", authRoutes);
 app.use("/game", gameRoutes);
 app.use("/deposit", depositRoutes);
+app.post("/callback", (req, res) => {
+	    console.log("========== MPESA CALLBACK ==========");
+	    console.log(JSON.stringify(req.body, null, 2));
+
+	    res.status(200).json({
+		            ResultCode: 0,
+		            ResultDesc: "Accepted"
+		        });
+});
 app.get("/", (req, res) => {
 	    res.json({
 		            success: true,
