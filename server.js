@@ -38,14 +38,16 @@ app.post("/callback", async (req, res) => {
 					                });
 
 			                if (user) {
-					                    user.coins += payment.amount;
-					                    await user.save();
 
-					                    console.log(
-					                        `✅ ${payment.amount} coins added to ${user.username}`
-					                    );
-					                }
-			            }
+			            user.coins += payment.amount;
+
+					await user.save();
+
+					console.log(
+					    `✅ ${payment.amount} coins added to ${user.username}`
+					);
+
+					}}
 	            }
 
             return res.json({
