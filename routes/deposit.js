@@ -42,7 +42,7 @@ router.post("/", async (req, res) => {
     );
 
     const accessToken = tokenResponse.data.access_token;
-
+console.log("ACCESS TOKEN:", accessToken);
     const timestamp = new Date()
       .toISOString()
       .replace(/[-:TZ.]/g, "")
