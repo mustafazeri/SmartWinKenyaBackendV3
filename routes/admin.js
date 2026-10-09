@@ -7,40 +7,34 @@ const Payment = require("../models/Payment");
 router.get("/stats", async (req, res) => {
 	    try {
 
-		            const users = await User.countDocuments();
+		            const totalUsers = await User.countDocuments();
 
-		            const deposits = await Payment.aggregate([
-				                {
-							                $match: {
-										                    status: "Completed"
-										                }
-							            },
+		            const totalCoins = await User.aggregate([
 				                {
 							                $group: {
 										                    _id: null,
-										                    total: {
-													                            $sum: "$amount"
-													                        }
+										                    total: { $sum: "$coins" }
 										                }
 							            }
 				            ]);
 
-		            const coins = await User.aggregate([
+		            const totalDeposits = await Payment.aggregate([
+				                {
+							                $match: { status: "Completed" }
+							            },
 				                {
 							                $group: {
 										                    _id: null,
-										                    total: {
-													                            $sum: "$coins"
-													                        }
+										                    total: { $sum: "$amount" }
 										                }
 							            }
 				            ]);
 
 		            res.json({
 				                success: true,
-				                users,
-				                deposits: deposits[0]?.total || 0,
-				                totalCoins: coins[0]?.total || 0
+				                users: totalUsers,
+				                coins: totalCoins[0]?.total || 0,
+				                deposits: totalDeposits[0]?.total || 0
 				            });
 
 		        } catch (err) {
@@ -48,10 +42,36 @@ router.get("/stats", async (req, res) => {
 				        console.error(err);
 
 				        res.json({
-						            success: false
+						            success: false,
+						            message: "Server error."
 						        });
 
 				    }
+});
+
+router.get("/payments", async (req, res) => {
+
+	    try {
+
+		            const payments = await Payment.find()
+		                .sort({ createdAt: -1 });
+
+		            res.json({
+				                success: true,
+				                payments
+				            });
+
+		        } catch (err) {
+
+				        console.error(err);
+
+				        res.json({
+						            success: false,
+						            message: "Server error."
+						        });
+
+				    }
+
 });
 
 module.exports = router;
