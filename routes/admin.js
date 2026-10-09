@@ -53,7 +53,18 @@ router.get("/payments", async (req, res) => {
 
 	    try {
 
-		            const payments = await Payment.find()
+		            const search = req.query.search || "";
+
+		            let query = {};
+
+		            if (search !== "") {
+				                query.username = {
+							                $regex: search,
+							                $options: "i"
+							            };
+				            }
+
+		            const payments = await Payment.find(query)
 		                .sort({ createdAt: -1 });
 
 		            res.json({
@@ -73,5 +84,4 @@ router.get("/payments", async (req, res) => {
 				    }
 
 });
-
 module.exports = router;
