@@ -3,85 +3,148 @@ const router = express.Router();
 
 const User = require("../models/User");
 const Payment = require("../models/Payment");
+const Withdrawal = require("../models/Withdrawal");
 
+// Dashboard statistics
 router.get("/stats", async (req, res) => {
-	    try {
+    try {
+        const totalUsers = await User.countDocuments();
+        const totalDeposits = await Payment.countDocuments({ status: "Completed" });
+        const totalWithdrawals = await Withdrawal.countDocuments();
+        const completedWithdrawals = await Withdrawal.countDocuments({
+            status: "Completed"
+        });
 
-		            const totalUsers = await User.countDocuments();
+        res.json({
+            success: true,
+            totalUsers,
+            totalDeposits,
+            totalWithdrawals,
+            completedWithdrawals
+        });
 
-		            const totalCoins = await User.aggregate([
-				                {
-							                $group: {
-										                    _id: null,
-										                    total: { $sum: "$coins" }
-										                }
-							            }
-				            ]);
-
-		            const totalDeposits = await Payment.aggregate([
-				                {
-							                $match: { status: "Completed" }
-							            },
-				                {
-							                $group: {
-										                    _id: null,
-										                    total: { $sum: "$amount" }
-										                }
-							            }
-				            ]);
-
-		            res.json({
-				                success: true,
-				                users: totalUsers,
-				                coins: totalCoins[0]?.total || 0,
-				                deposits: totalDeposits[0]?.total || 0
-				            });
-
-		        } catch (err) {
-
-				        console.error(err);
-
-				        res.json({
-						            success: false,
-						            message: "Server error."
-						        });
-
-				    }
+    } catch (err) {
+        console.error(err);
+        res.json({
+            success: false,
+            message: "Server error."
+        });
+    }
 });
 
-router.get("/payments", async (req, res) => {
+// Deposit history
+router.get("/deposits", async (req, res) => {
+    try {
+        const deposits = await Payment.find().sort({ createdAt: -1 });
 
-	    try {
+        res.json({
+            success: true,
+            deposits
+        });
 
-		            const search = req.query.search || "";
-
-		            let query = {};
-
-		            if (search !== "") {
-				                query.username = {
-							                $regex: search,
-							                $options: "i"
-							            };
-				            }
-
-		            const payments = await Payment.find(query)
-		                .sort({ createdAt: -1 });
-
-		            res.json({
-				                success: true,
-				                payments
-				            });
-
-		        } catch (err) {
-
-				        console.error(err);
-
-				        res.json({
-						            success: false,
-						            message: "Server error."
-						        });
-
-				    }
-
+    } catch (err) {
+        console.error(err);
+        res.json({
+            success: false,
+            message: "Server error."
+        });
+    }
 });
+// Withdrawal history
+router.get("/withdrawals", async (req, res) => {
+    try {
+        const withdrawals = await Withdrawal.find()
+            .sort({ createdAt: -1 });
+
+        res.json({
+            success: true,
+            withdrawals
+        });
+
+    } catch (err) {
+        console.error(err);
+
+        res.json({
+            success: false,
+            message: "Server error."
+        });
+    }
+});
+
+// Approve withdrawal
+router.post("/withdraw/approve", async (req, res) => {
+    try {
+
+        const { id } = req.body;
+
+        const withdrawal = await Withdrawal.findById(id);
+
+        if (!withdrawal) {
+            return res.json({
+                success: false,
+                message: "Withdrawal not found."
+            });
+        }
+
+        withdrawal.status = "Completed";
+        await withdrawal.save();
+
+        res.json({
+            success: true,
+            message: "Withdrawal approved."
+        });
+
+    } catch (err) {
+        console.error(err);
+
+        res.json({
+            success: false,
+            message: "Server error."
+        });
+    }
+});
+// Reject withdrawal
+router.post("/withdraw/reject", async (req, res) => {
+    try {
+
+        const { id } = req.body;
+
+        const withdrawal = await Withdrawal.findById(id);
+
+        if (!withdrawal) {
+            return res.json({
+                success: false,
+                message: "Withdrawal not found."
+            });
+        }
+
+        const user = await User.findOne({
+            username: withdrawal.username
+        });
+
+        if (user) {
+            user.coins += withdrawal.coins;
+            await user.save();
+        }
+
+        withdrawal.status = "Rejected";
+        await withdrawal.save();
+
+        res.json({
+            success: true,
+            message: "Withdrawal rejected and coins refunded."
+        });
+
+    } catch (err) {
+
+        console.error(err);
+
+        res.json({
+            success: false,
+            message: "Server error."
+        });
+
+    }
+});
+
 module.exports = router;
