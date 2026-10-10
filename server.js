@@ -11,7 +11,7 @@ const authRoutes = require("./routes/auth");
 const adminRoutes = require("./routes/admin");
 const gameRoutes = require("./routes/game");
 const depositRoutes = require("./routes/deposit");
-
+const withdrawRoutes = require("./routes/withdraw");
 const app = express();
 
 app.use(cors());
@@ -21,7 +21,7 @@ app.use("/auth", authRoutes);
 app.use("/admin", adminRoutes);
 app.use("/game", gameRoutes);
 app.use("/deposit", depositRoutes);
-
+app.use("/withdraw", withdrawRoutes);
 app.get("/mpesa/history/:username", async (req, res) => {
 
     try {
