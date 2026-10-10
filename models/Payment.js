@@ -21,7 +21,11 @@ const paymentSchema = new mongoose.Schema({
 	  status: {
 		      type: String,
 		      default: "Pending"
-		    }
+	  },
+	mpesaReceipt: {
+		    type: String,
+		    default: ""
+	}
 }, {
 	  timestamps: true
 });
