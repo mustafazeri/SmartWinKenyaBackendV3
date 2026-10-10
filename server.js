@@ -56,7 +56,19 @@ app.post("/callback", async (req, res) => {
 
 		            const callback = req.body.Body.stkCallback;
 
-		            if (callback.ResultCode === 0) {
+		         const checkoutRequestID = callback.CheckoutRequestID;
+
+		    const payment = await Payment.findOne({
+			        checkoutRequestID
+		    });
+
+		    if (!payment) {
+			        return res.json({
+					        ResultCode: 0,
+					        ResultDesc: "Accepted"
+					    });
+		    }
+		    if (callback.ResultCode === 0) {
 
 				                const checkoutRequestID = callback.CheckoutRequestID;
 
@@ -98,9 +110,17 @@ app.post("/callback", async (req, res) => {
 
 							            }
 
-				            }
+				                                                        }
+		                                                else {
+									                                                payment.status = "Failed";
+									                                                await payment.save();
 
-		            return res.json({
+									                                                console.log(
+																                                                    `❌ Payment failed for ${payment.username}. ResultCode: ${callback.ResultCode}`
+																                                                );
+									                                            }
+
+		                                return res.json({
 				                ResultCode: 0,
 				                ResultDesc: "Accepted"
 				            });
