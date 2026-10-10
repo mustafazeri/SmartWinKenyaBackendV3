@@ -17,6 +17,31 @@ app.use("/auth", authRoutes);
 app.use("/admin", adminRoutes);
 app.use("/game", gameRoutes);
 app.use("/deposit", depositRoutes);
+app.get("/mpesa/history/:username", async (req, res) => {
+
+	    try {
+
+		            const payments = await Payment.find({
+				                username: req.params.username
+				            }).sort({ createdAt: -1 });
+
+		            res.json({
+				                success: true,
+				                payments
+				            });
+
+		        } catch (err) {
+
+				        console.error(err);
+
+				        res.json({
+						            success: false,
+						            message: "Could not load deposit history."
+						        });
+
+				    }
+
+});
 app.post("/callback", async (req, res) => {
 	        console.log("========== MPESA CALLBACK ==========");
     console.log(JSON.stringify(req.body, null, 2));
