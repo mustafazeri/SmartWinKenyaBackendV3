@@ -80,6 +80,7 @@ app.post("/callback", async (req, res) => {
 							                payment.mpesaReceipt = receipt;
 
 							                await payment.save();
+							console.log("Receipt saved:", payment.mpesaReceipt);
 
 							                const user = await User.findOne({
 										                    username: payment.username
