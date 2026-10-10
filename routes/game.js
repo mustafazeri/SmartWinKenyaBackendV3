@@ -34,5 +34,47 @@ router.get("/leaderboard", async (req, res) => {
 				    }
 
 });
+router.get("/myrank/:username", async (req, res) => {
+
+	    try {
+
+		            const User = require("../models/User");
+
+		            const users = await User.find({})
+		                .sort({ coins: -1 });
+
+		            const index = users.findIndex(
+				                user => user.username === req.params.username
+				            );
+
+		            if (index === -1) {
+				                return res.json({
+							                success: false,
+							                message: "User not found."
+							            });
+				            }
+
+		            const user = users[index];
+
+		            res.json({
+				                success: true,
+				                rank: index + 1,
+				                username: user.username,
+				                coins: user.coins,
+				                score: user.score || 0
+				            });
+
+		        } catch (err) {
+
+				        console.error(err);
+
+				        res.json({
+						            success: false,
+						            message: "Server error."
+						        });
+
+				    }
+
+});
 module.exports = router;
 
