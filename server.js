@@ -42,76 +42,79 @@ app.get("/mpesa/history/:username", async (req, res) => {
 				    }
 
 });
+
 app.post("/callback", async (req, res) => {
-	        console.log("========== MPESA CALLBACK ==========");
-    console.log(JSON.stringify(req.body, null, 2));
 
-    try {
-            const callback = req.body.Body.stkCallback;
+	    console.log("========== MPESA CALLBACK ==========");
+	    console.log(JSON.stringify(req.body, null, 2));
 
-            if (callback.ResultCode === 0) {
-	                const checkoutRequestID = callback.CheckoutRequestID;
+	    try {
 
-	                const payment = await Payment.findOne({
-			                checkoutRequestID: checkoutRequestID
-			            });
+		            const callback = req.body.Body.stkCallback;
 
-	                if (payment && payment.status !== "Completed") {
-			                payment.status = "Completed";
-			                await payment.save();
+		            if (callback.ResultCode === 0) {
 
-			                const user = await User.findOne({
-					                    username: payment.username
-					                });
+				                const checkoutRequestID = callback.CheckoutRequestID;
 
-			                if (user) {
-
-			            user.coins += payment.amount;
-						// First deposit referral reward
-						// if (user.referredBy && !user.referralRewardPaid) {
-						//
-						//     const referrer = await User.findOne({
-						//             referralCode: user.referredBy
-						//                 });
-						//
-						//                     if (referrer) {
-						//
-						//                             referrer.coins += 20;
-						//                                     user.coins += 20;
-						//
-						//                                             await referrer.save();
-						//
-						//                                                     user.referralRewardPaid = true;
-						//
-						//                                                             console.log(
-						//                                                                         `🎁 Referral reward: ${referrer.username} and ${user.username} received 20 coins each`
-						//                                                                                 );
-						//                                                                                     }
-						//                                                                                     }
-
-					await user.save();
-
-					console.log(
-					    `✅ ${payment.amount} coins added to ${user.username}`
-					);
-
-					}}
-	            }
-
-            return res.json({
-	                ResultCode: 0,
-	                ResultDesc: "Accepted"
-	            });
-
-        } catch (err) {
-	        console.error(err);
-
-	        return res.json({
-		            ResultCode: 0,
-		            ResultDesc: "Accepted"
-		        });
-	}
-});		
+				                // Get receipt number
+				    //             const callbackItems = callback.CallbackMetadata.Item;
+				    //
+				    //                         let receipt = "";
+				    //
+				    //                                     callbackItems.forEach(item => {
+				    //                                                     if (item.Name === "MpesaReceiptNumber") {
+				    //                                                                         receipt = item.Value;
+				    //                                                                                         }
+				    //                                                                                                     });
+				    //
+				    //                                                                                                                 const payment = await Payment.findOne({
+				    //                                                                                                                                 checkoutRequestID: checkoutRequestID
+				    //                                                                                                                                             });
+				    //
+				    //                                                                                                                                                         if (payment && payment.status !== "Completed") {
+				    //
+				    //                                                                                                                                                                         payment.status = "Completed";
+				    //                                                                                                                                                                                         payment.mpesaReceipt = receipt;
+				    //
+				    //                                                                                                                                                                                                         await payment.save();
+				    //
+				    //                                                                                                                                                                                                                         const user = await User.findOne({
+				    //                                                                                                                                                                                                                                             username: payment.username
+				    //                                                                                                                                                                                                                                                             });
+				    //
+				    //                                                                                                                                                                                                                                                                             if (user) {
+				    //
+				    //                                                                                                                                                                                                                                                                                                 user.coins += payment.amount;
+				    //
+				    //                                                                                                                                                                                                                                                                                                                     await user.save();
+				    //
+				    //                                                                                                                                                                                                                                                                                                                                         console.log(
+				    //                                                                                                                                                                                                                                                                                                                                                                 `✅ ${payment.amount} coins added to ${user.username}`
+				    //                                                                                                                                                                                                                                                                                                                                                                                     );
+				    //
+				    //                                                                                                                                                                                                                                                                                                                                                                                                     }
+				    //
+				    //                                                                                                                                                                                                                                                                                                                                                                                                                 }
+				    //
+				    //                                                                                                                                                                                                                                                                                                                                                                                                                         }
+				    //
+				    //                                                                                                                                                                                                                                                                                                                                                                                                                                 return res.json({
+				    //                                                                                                                                                                                                                                                                                                                                                                                                                                             ResultCode: 0,
+				    //                                                                                                                                                                                                                                                                                                                                                                                                                                                         ResultDesc: "Accepted"
+				    //                                                                                                                                                                                                                                                                                                                                                                                                                                                                 });
+				    //
+				    //                                                                                                                                                                                                                                                                                                                                                                                                                                                                     } catch (err) {
+				    //
+				    //                                                                                                                                                                                                                                                                                                                                                                                                                                                                             console.error(err);
+				    //
+				    //                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     return res.json({
+				    //                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ResultCode: 0,
+				    //                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             ResultDesc: "Accepted"
+				    //                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     });
+				    //
+				    //                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         }
+				    //
+				    //                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         });
 app.get("/", (req, res) => {
 	    res.json({
 		            success: true,
