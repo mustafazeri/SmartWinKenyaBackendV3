@@ -24,127 +24,145 @@ app.use("/deposit", depositRoutes);
 
 app.get("/mpesa/history/:username", async (req, res) => {
 
-	    try {
+    try {
 
-		            const payments = await Payment.find({
-				                username: req.params.username
-				            }).sort({ createdAt: -1 });
+        const payments = await Payment.find({
+            username: req.params.username
+        }).sort({ createdAt: -1 });
 
-		            res.json({
-				                success: true,
-				                payments
-				            });
+        res.json({
+            success: true,
+            payments
+        });
 
-		        } catch (err) {
+    } catch (err) {
 
-				        console.error(err);
+        console.error(err);
 
-				        res.json({
-						            success: false,
-						            message: "Could not load deposit history."
-						        });
+        res.json({
+            success: false,
+            message: "Could not load deposit history."
+        });
 
-				    }
+    }
 
 });
+
 app.post("/callback", async (req, res) => {
 
-	    console.log("========== MPESA CALLBACK ==========");
-	    console.log(JSON.stringify(req.body, null, 2));
+    console.log("========== MPESA CALLBACK ==========");
+    console.log(JSON.stringify(req.body, null, 2));
 
-	    try {
+    try {
 
-		            const callback = req.body.Body.stkCallback;
+        const callback = req.body.Body.stkCallback;
+        const checkoutRequestID = callback.CheckoutRequestID;
 
-		         const checkoutRequestID = callback.CheckoutRequestID;
+        const payment = await Payment.findOne({
+            checkoutRequestID
+        });
 
-		    const payment = await Payment.findOne({
-			        checkoutRequestID
-		    });
+        if (!payment) {
+            return res.json({
+                ResultCode: 0,
+                ResultDesc: "Accepted"
+            });
+        }
 
-		    if (!payment) {
-			        return res.json({
-					        ResultCode: 0,
-					        ResultDesc: "Accepted"
-					    });
-		    }
-		    if (callback.ResultCode === 0) {
+        if (callback.ResultCode === 0) {
 
-				                const checkoutRequestID = callback.CheckoutRequestID;
+            const callbackItems =
+                callback.CallbackMetadata?.Item || [];
 
-				                const callbackItems = callback.CallbackMetadata.Item || [];
+            let receipt = "";
 
-				                let receipt = "";
+            callbackItems.forEach(item => {
+                if (item.Name === "MpesaReceiptNumber") {
+                    receipt = item.Value;
+                }
+            });
 
-				                callbackItems.forEach(item => {
-							                if (item.Name === "MpesaReceiptNumber") {
-										                    receipt = item.Value;
-										                }
-							            });
+            payment.status = "Completed";
+            payment.mpesaReceipt = receipt;
 
-				                const payment = await Payment.findOne({
-							                checkoutRequestID
-							            });
+            await payment.save();
 
-				                if (payment && payment.status !== "Completed") {
+            console.log("Receipt saved:", receipt);
 
-							                payment.status = "Completed";
-							                payment.mpesaReceipt = receipt;
+            const user = await User.findOne({
+                username: payment.username
+            });
 
-							                await payment.save();
-							console.log("Receipt saved:", payment.mpesaReceipt);
 
-							                const user = await User.findOne({
-										                    username: payment.username
-										                });
+            if (user) {
 
-							                if (user) {
+                // 1 KSh = 1 Coin
+                user.coins += payment.amount;
 
-										                    user.coins += payment.amount;
+                // First deposit referral reward
+                if (user.referredBy && !user.referralRewardPaid) {
 
-										                    await user.save();
+                    const referrer = await User.findOne({
+                        referralCode: user.referredBy
+                    });
 
-										                    console.log(`✅ ${payment.amount} coins added to ${user.username}`);
+                    if (referrer) {
 
-										                }
+                        referrer.coins += 20;
+                        user.coins += 20;
 
-							            }
+                        await referrer.save();
 
-				                                                        }
-		                                                else {
-									                                                payment.status = "Failed";
-									                                                await payment.save();
+                        user.referralRewardPaid = true;
 
-									                                                console.log(
-																                                                    `❌ Payment failed for ${payment.username}. ResultCode: ${callback.ResultCode}`
-																                                                );
-									                                            }
+                        console.log(
+                            `🎁 Referral reward: ${referrer.username} and ${user.username} received 20 coins each`
+                        );
+                    }
+                }
 
-		                                return res.json({
-				                ResultCode: 0,
-				                ResultDesc: "Accepted"
-				            });
+                await user.save();
 
-		        } catch (err) {
+                console.log(
+                    `✅ ${payment.amount} coins added to ${user.username}`
+                );
+            }
 
-				        console.error(err);
+        } else {
 
-				        return res.json({
-						            ResultCode: 0,
-						            ResultDesc: "Accepted"
-						        });
+            payment.status = "Failed";
+            await payment.save();
 
-				    }
+            console.log(
+                `❌ Payment failed for ${payment.username}. ResultCode: ${callback.ResultCode}`
+            );
+        }
+
+        return res.json({
+            ResultCode: 0,
+            ResultDesc: "Accepted"
+        });
+
+    } catch (err) {
+
+        console.error(err);
+
+        return res.json({
+            ResultCode: 0,
+            ResultDesc: "Accepted"
+        });
+
+    }
 
 });
+
+
 app.get("/", (req, res) => {
-
-	    res.json({
-		            success: true,
-		            app: "SmartWin Kenya V3",
-		            status: "Running"
-		        });
-
+    res.json({
+        success: true,
+        app: "SmartWin Kenya V3",
+        status: "Running"
+    });
 });
 
 const PORT = process.env.PORT || 10000;
@@ -152,17 +170,14 @@ const PORT = process.env.PORT || 10000;
 mongoose.connect(process.env.MONGODB_URI)
 .then(() => {
 
-	    console.log("✅ MongoDB Connected");
+    console.log("✅ MongoDB Connected");
 
-	    app.listen(PORT, () => {
-
-		            console.log(`🚀 Server running on port ${PORT}`);
-
-		        });
+    app.listen(PORT, () => {
+        console.log(`🚀 Server running on port ${PORT}`);
+    });
 
 })
 .catch(err => {
-
-	    console.error("MongoDB Error:", err);
-
+    console.error(err);
 });
+
