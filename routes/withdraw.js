@@ -34,7 +34,18 @@ router.post("/", async (req, res) => {
         }
 
         // 1 coin = 1 KSh
-        const amount = Number(coins);
+        const pendingWithdrawal = await Withdrawal.findOne({
+		    username,
+		    status: "Pending"
+	});
+
+	    if (pendingWithdrawal) {
+		        return res.json({
+				        success: false,
+				        message: "You already have a pending withdrawal."
+				    });
+	    }
+	    const amount = Number(coins);
 
         user.coins -= Number(coins);
         user.totalWithdrawn += amount;
@@ -50,9 +61,9 @@ router.post("/", async (req, res) => {
         });
 
         res.json({
-            success: true,
-            message: "Withdrawal request submitted."
-        });
+		    success: true,
+		    message: "Withdrawal request submitted successfully. Your withdrawal may be approved within 48 hours."
+	});
 
     } catch (err) {
 
@@ -64,6 +75,31 @@ router.post("/", async (req, res) => {
         });
 
     }
+
+});
+router.get("/:username", async (req, res) => {
+
+	    try {
+
+		            const withdrawals = await Withdrawal.find({
+				                username: req.params.username
+				            }).sort({ createdAt: -1 });
+
+		            res.json({
+				                success: true,
+				                withdrawals
+				            });
+
+		        } catch (err) {
+
+				        console.error(err);
+
+				        res.json({
+						            success: false,
+						            message: "Server error."
+						        });
+
+				    }
 
 });
 
