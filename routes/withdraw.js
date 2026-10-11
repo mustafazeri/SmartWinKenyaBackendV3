@@ -62,7 +62,7 @@ router.post("/", async (req, res) => {
 
         res.json({
 		    success: true,
-		    message: "Withdrawal request submitted successfully. Your withdrawal may be approved within 48 hours."
+		    message: "✅ Withdrawal request submitted successfully.\n\nProcessing time is up to 48 hours. You can track its status in your Wallet."
 	});
 
     } catch (err) {
