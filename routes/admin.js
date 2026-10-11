@@ -4,10 +4,39 @@ const router = express.Router();
 const User = require("../models/User");
 const Payment = require("../models/Payment");
 const Withdrawal = require("../models/Withdrawal");
+async function checkAdmin(req, res) {
+
+	    const username = req.headers.username;
+
+	    if (!username) {
+		            res.json({
+				                success: false,
+				                message: "Access denied."
+				            });
+		            return null;
+		        }
+
+	    const user = await User.findOne({
+		            username
+		        });
+
+	    if (!user || !user.isAdmin) {
+		            res.json({
+				                success: false,
+				                message: "Access denied."
+				            });
+		            return null;
+		        }
+
+	    return user;
+}
 
 // Dashboard statistics
 router.get("/stats", async (req, res) => {
     try {
+	    const admin = await checkAdmin(req, res);
+
+	    if (!admin) return;
         const totalUsers = await User.countDocuments();
         const totalDeposits = await Payment.countDocuments({ status: "Completed" });
         const totalWithdrawals = await Withdrawal.countDocuments();
@@ -35,6 +64,9 @@ router.get("/stats", async (req, res) => {
 // Deposit history
 router.get("/deposits", async (req, res) => {
     try {
+	    const admin = await checkAdmin(req, res);
+
+	    if (!admin) return;
         const deposits = await Payment.find().sort({ createdAt: -1 });
 
         res.json({
@@ -53,6 +85,9 @@ router.get("/deposits", async (req, res) => {
 // Withdrawal history
 router.get("/withdrawals", async (req, res) => {
     try {
+	    const admin = await checkAdmin(req, res);
+
+	    if (!admin) return;
         const withdrawals = await Withdrawal.find()
             .sort({ createdAt: -1 });
 
@@ -73,7 +108,9 @@ router.get("/withdrawals", async (req, res) => {
 
 // Approve withdrawal
 router.post("/withdraw/approve", async (req, res) => {
-    try {
+    try {const admin = await checkAdmin(req, res);
+
+	    if (!admin) return;
 
         const { id } = req.body;
 
@@ -105,7 +142,9 @@ router.post("/withdraw/approve", async (req, res) => {
 });
 // Reject withdrawal
 router.post("/withdraw/reject", async (req, res) => {
-    try {
+    try {const admin = await checkAdmin(req, res);
+
+	    if (!admin) return;
 
         const { id } = req.body;
 

@@ -66,7 +66,7 @@ exports.startGame = async (req, res) => {
 		            const game = await GameSession.create({
 				                username,
 				                stake,
-				                reward: stake * 5,
+				                reward: stake * 2,
 				                questions: questions.map(q => q._id),
 				                currentQuestion: 0,
 				                score: 0,
