@@ -401,3 +401,26 @@ exports.quitGame = async (req, res) => {
 				    }
 
 };
+exports.startDailyChallenge = async (req, res) => {
+
+	    try {
+
+		            const { username } = req.body;
+
+		            res.json({
+				                success: false,
+				                message: "Daily Challenge is under construction."
+				            });
+
+		        } catch (err) {
+
+				        console.error(err);
+
+				        res.json({
+						            success: false,
+						            message: "Server error."
+						        });
+
+				    }
+
+};
