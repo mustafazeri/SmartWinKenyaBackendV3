@@ -130,12 +130,39 @@ exports.startGame = async (req, res) => {
 
 		    questions.sort(() => Math.random() - 0.5);
 
-		            if (questions.length < 10) {
-				                return res.json({
-							                success: false,
-							                message: "Question bank is empty."
-							            });
-				            }
+		            while (questions.length < 10) {
+
+				        const extra = await Question.aggregate([
+						        {
+								            $match: {
+										                    _id: {
+													                        $nin: questions.map(q => q._id)
+													                    }
+										                }
+								        },
+						        {
+								            $sample: {
+										                    size: 1
+										                }
+								        }
+						    ]);
+
+				        if (extra.length === 0) {
+						        break;
+						    }
+
+				        questions.push(extra[0]);
+
+			    }
+
+		    if (questions.length < 10) {
+
+			        return res.json({
+					        success: false,
+					        message: "Not enough questions in database."
+					    });
+
+		    }
 
 		            user.coins -= stake;
 		            await user.save();
