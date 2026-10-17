@@ -445,6 +445,27 @@ exports.startDailyChallenge = async (req, res) => {
 		    user.lastDailyChallenge = new Date();
 
 		    await user.save();
+		    const questions = await Question.aggregate([
+			        {
+					        $match: {
+							            difficulty: "Expert"
+							        }
+					    },
+			        {
+					        $sample: {
+							            size: 10
+							        }
+					    }
+		    ]);
+
+		    if (questions.length < 10) {
+
+			        return res.json({
+					        success: false,
+					        message: "Not enough Expert questions available."
+					    });
+
+		    }:
 
 		        } catch (err) {
 
