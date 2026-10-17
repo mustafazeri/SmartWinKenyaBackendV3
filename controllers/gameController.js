@@ -465,7 +465,42 @@ exports.startDailyChallenge = async (req, res) => {
 					        message: "Not enough Expert questions available."
 					    });
 
-		    }:
+		    }
+		    const game = await GameSession.create({
+
+			        username,
+
+			        stake: 200,
+
+			        reward: 1000,
+
+			        questions,
+
+			        currentQuestion: 0,
+
+			        score: 0,
+
+			        mode: "daily",
+
+			        status: "playing"
+
+		    });
+
+		    res.json({
+
+			        success: true,
+
+			        gameId: game._id,
+
+			        balance: user.coins,
+
+			        question: {
+					        ...questions[0],
+					        number: 1,
+					        total: 10
+					    }
+
+		    });
 
 		        } catch (err) {
 
