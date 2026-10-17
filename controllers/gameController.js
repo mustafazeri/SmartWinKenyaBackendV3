@@ -407,10 +407,44 @@ exports.startDailyChallenge = async (req, res) => {
 
 		            const { username } = req.body;
 
-		            res.json({
-				                success: false,
-				                message: "Daily Challenge is under construction."
-				            });
+		    const user = await User.findOne({ username });
+
+		    if (!user) {
+			        return res.json({
+					        success: false,
+					        message: "User not found."
+					    });
+		    }
+
+		    if (user.coins < 200) {
+			        return res.json({
+					        success: false,
+					        message: "You need 200 coins to play the Daily Challenge."
+					    });
+		    }
+
+		    if (user.lastDailyChallenge) {
+
+			        const now = new Date();
+			        const last = new Date(user.lastDailyChallenge);
+
+			        const hours = (now - last) / (1000 * 60 * 60);
+
+			        if (hours < 24) {
+
+					        return res.json({
+							            success: false,
+							            message: "You have already played today's Daily Challenge."
+							        });
+
+					    }
+
+		    }
+		    user.coins -= 200;
+
+		    user.lastDailyChallenge = new Date();
+
+		    await user.save();
 
 		        } catch (err) {
 
