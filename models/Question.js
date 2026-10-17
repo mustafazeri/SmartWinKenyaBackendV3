@@ -24,9 +24,19 @@ const questionSchema = new mongoose.Schema({
 		        },
 
 	    difficulty: {
-		            type: String,
-		            default: "normal"
-		        }
+		        type: String,
+		    default: "Medium"
+	    },
+
+	source: {
+		    type: String,
+		    default: "Manual"
+	},
+
+	createdByAI: {
+		    type: Boolean,
+		    default: false
+	}
 
 }, {
 	    timestamps: true

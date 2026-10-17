@@ -1,7 +1,18 @@
 const User = require("../models/User");
 const Question = require("../models/Question");
 const GameSession = require("../models/GameSession");
-
+const CATEGORIES = [
+	    "Kenya",
+	    "Science",
+	    "Technology",
+	    "Driving",
+	    "Agriculture",
+	    "Sports",
+	    "History",
+	    "Business",
+	    "English",
+	    "IQ"
+];
 exports.startGame = async (req, res) => {
 	    try {
 
@@ -49,9 +60,75 @@ exports.startGame = async (req, res) => {
 							            });
 				            }
 
-		            const questions = await Question.aggregate([
-				                { $sample: { size: 10 } }
-				            ]);
+		                  let easy = 6;
+		    let medium = 3;
+		    let hard = 1;
+		    let expert = 0;
+
+		    if (stake >= 51 && stake <= 150) {
+
+			        easy = 3;
+			        medium = 5;
+			        hard = 2;
+
+		    }
+
+		    if (stake >= 151 && stake <= 300) {
+
+			        easy = 2;
+			        medium = 3;
+			        hard = 4;
+			        expert = 1;
+
+		    }
+
+		    if (stake >= 301) {
+
+			        easy = 0;
+			        medium = 2;
+			        hard = 5;
+			        expert = 3;
+
+		    }
+
+		    const questions = [];
+
+		    async function pickQuestions(difficulty, amount) {
+
+			        for (let i = 0; i < amount; i++) {
+
+					        const category = CATEGORIES[i % CATEGORIES.length];
+
+					        const q = await Question.aggregate([
+							            {
+									                    $match: {
+												                        difficulty,
+												                        category
+												                    }
+									                },
+							            {
+									                    $sample: {
+												                        size: 1
+												                    }
+									                }
+							        ]);
+
+					        if (q.length > 0) {
+
+							            questions.push(q[0]);
+
+							        }
+
+					    }
+
+		    }
+
+		    await pickQuestions("Easy", easy);
+		    await pickQuestions("Medium", medium);
+		    await pickQuestions("Hard", hard);
+		    await pickQuestions("Expert", expert);
+
+		    questions.sort(() => Math.random() - 0.5);
 
 		            if (questions.length < 10) {
 				                return res.json({
@@ -72,6 +149,7 @@ exports.startGame = async (req, res) => {
 				                score: 0,
 				                status: "playing"
 				            });
+		    console.log("GAME ID:", game._id.toString());
 
 		            res.json({
 				                success: true,
@@ -165,9 +243,16 @@ exports.answerQuestion = async (req, res) => {
 				                await game.save();
 
 				                return res.json({
-							                success: false,
-							                message: "Wrong answer. Game Over."
-							            });
+
+							    success: false,
+
+							    message: "Wrong answer. Game Over.",
+
+							    correctAnswer: question.options[question.answer],
+
+							    correctIndex: question.answer
+
+						});
 
 				            }
 

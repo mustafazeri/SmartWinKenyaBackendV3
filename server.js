@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const express = require("express");
 const mongoose = require("mongoose");
+const { checkQuestionBank } = require("./services/questionBankManager");
 const cors = require("cors");
 
 const User = require("./models/User");
@@ -10,8 +11,10 @@ const Payment = require("./models/Payment");
 const authRoutes = require("./routes/auth");
 const adminRoutes = require("./routes/admin");
 const gameRoutes = require("./routes/game");
+const aiRoutes = require("./routes/ai");
 const depositRoutes = require("./routes/deposit");
 const withdrawRoutes = require("./routes/withdraw");
+
 const app = express();
 
 app.use(cors());
@@ -20,6 +23,7 @@ app.use(express.json());
 app.use("/auth", authRoutes);
 app.use("/admin", adminRoutes);
 app.use("/game", gameRoutes);
+app.use("/ai", aiRoutes);
 app.use("/deposit", depositRoutes);
 app.use("/withdraw", withdrawRoutes);
 app.get("/mpesa/history/:username", async (req, res) => {
@@ -174,6 +178,13 @@ mongoose.connect(process.env.MONGODB_URI)
 
     app.listen(PORT, () => {
         console.log(`🚀 Server running on port ${PORT}`);
+	    checkQuestionBank();
+
+	    setInterval(() => {
+
+		        checkQuestionBank();
+
+	    }, 1000 * 60 * 10);
     });
 
 })
