@@ -14,7 +14,6 @@ const CATEGORIES = [
 	    "IQ"
 ];
 exports.startGame = async (req, res) => {
-	    try {
 
 		            const { username, stake } = req.body;
 
@@ -175,6 +174,8 @@ exports.startGame = async (req, res) => {
 				                currentQuestion: 0,
 				                score: 0,
 				                status: "playing"
+				    mode: "daily",
+				    reward: 1000,
 				            });
 		    console.log("GAME ID:", game._id.toString());
 
@@ -295,22 +296,32 @@ exports.answerQuestion = async (req, res) => {
 							                username: game.username
 							            });
 
-				                user.coins += game.reward;
+				               let reward = game.reward;
+
+				    if (game.mode !== "daily") {
+					        reward = game.reward;
+				    }
+
+				    user.coins += reward;
+
 				    user.gamesPlayed += 1;
 				    user.gamesWon += 1;
 
-				                await user.save();
+				    await user.save();
 
-				                await game.save();
+				    await game.save();
 
-				                return res.json({
+				    return res.json({
 
-							                success: true,
-							                finished: true,
-							                reward: game.reward,
-							                balance: user.coins
+					        success: true,
 
-							            });
+					        finished: true,
+
+					        reward: reward,
+
+					        balance: user.coins
+
+				    });
 
 				            }
 
@@ -334,6 +345,7 @@ exports.answerQuestion = async (req, res) => {
 
 							                options: nextQuestion.options,
 
+timer: game.mode === "daily" ? 15 : 10,
 							                number: game.currentQuestion + 1,
 
 							                total: 10,
@@ -446,11 +458,6 @@ exports.startDailyChallenge = async (req, res) => {
 
 		    await user.save();
 		    const questions = await Question.aggregate([
-			        {
-					        $match: {
-							            difficulty: "Expert"
-							        }
-					    },
 			        {
 					        $sample: {
 							            size: 10
