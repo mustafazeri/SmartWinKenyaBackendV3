@@ -15,6 +15,7 @@ const CATEGORIES = [
 ];
 exports.startGame = async (req, res) => {
 
+	try {
 		            const { username, stake } = req.body;
 
 		            if (!username || !stake) {
@@ -174,8 +175,7 @@ exports.startGame = async (req, res) => {
 				                currentQuestion: 0,
 				                score: 0,
 				                status: "playing",
-				    mode: "daily",
-				    reward: 1000,
+				    mode: "normal",
 				            });
 		    console.log("GAME ID:", game._id.toString());
 
@@ -348,9 +348,8 @@ exports.answerQuestion = async (req, res) => {
 timer: game.mode === "daily" ? 15 : 10,
 							                number: game.currentQuestion + 1,
 
-							                total: 10,
+							                total: 10
 
-							                timer: 10
 
 							            }
 
