@@ -173,7 +173,7 @@ exports.startGame = async (req, res) => {
 				                questions: questions.map(q => q._id),
 				                currentQuestion: 0,
 				                score: 0,
-				                status: "playing"
+				                status: "playing",
 				    mode: "daily",
 				    reward: 1000,
 				            });
