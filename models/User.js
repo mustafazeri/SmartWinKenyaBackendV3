@@ -29,6 +29,10 @@ const userSchema = new mongoose.Schema({
 		            type: Number,
 		            default: 0
 		        },
+	lastDailyChallenge: {
+		    type: Date,
+		    default: null
+	},
 
 	    gamesPlayed: {
 		            type: Number,

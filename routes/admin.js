@@ -185,5 +185,40 @@ router.post("/withdraw/reject", async (req, res) => {
 
     }
 });
+router.post("/addCoins", async (req, res) => {
 
+	    try {
+
+		            const { username, coins } = req.body;
+
+		            const user = await User.findOne({ username });
+
+		            if (!user) {
+				                return res.json({
+							                success: false,
+							                message: "User not found."
+							            });
+				            }
+
+		            user.coins += Number(coins);
+
+		            await user.save();
+
+		            res.json({
+				                success: true,
+				                balance: user.coins
+				            });
+
+		        } catch (err) {
+
+				        console.error(err);
+
+				        res.json({
+						            success: false,
+						            message: "Server error."
+						        });
+
+				    }
+
+});
 module.exports = router;
