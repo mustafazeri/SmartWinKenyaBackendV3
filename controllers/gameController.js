@@ -49,16 +49,14 @@ exports.startGame = async (req, res) => {
 				            }
 
 		            const activeGame = await GameSession.findOne({
-				                username,
-				                status: "playing"
-				            });
+				        username,
+				        status: "playing"
+			    });
 
-		            if (activeGame) {
-				                return res.json({
-							                success: false,
-							                message: "Finish your current game first."
-							            });
-				            }
+		if (activeGame) {
+			    activeGame.status = "quit";
+			    await activeGame.save();
+		}
 
 		                  let easy = 6;
 		    let medium = 3;
