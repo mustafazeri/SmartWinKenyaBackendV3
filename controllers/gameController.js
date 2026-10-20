@@ -100,9 +100,12 @@ exports.startGame = async (req, res) => {
 					        const q = await Question.aggregate([
 							            {
 									                    $match: {
-												                        difficulty,
-												                        category
-												                    }
+												        difficulty,
+												        category,
+												        _id: {
+														        $nin: questions.map(q => q._id)
+														    }
+											    }
 									                },
 							            {
 									                    $sample: {
@@ -187,7 +190,7 @@ exports.startGame = async (req, res) => {
 							                options: questions[0].options,
 							                number: 1,
 							                total: 10,
-							                timer: 10
+							                timer: 15
 							            }
 				            });
 
@@ -505,6 +508,60 @@ exports.startDailyChallenge = async (req, res) => {
 					    }
 
 		    });
+
+		        } catch (err) {
+
+				        console.error(err);
+
+				        res.json({
+						            success: false,
+						            message: "Server error."
+						        });
+
+				    }
+
+};
+exports.resumeGame = async (req, res) => {
+
+	    try {
+
+		            const { username } = req.body;
+
+		            const game = await GameSession.findOne({
+				                username,
+				                status: "playing"
+				            });
+
+		            if (!game) {
+				                return res.json({
+							                success: false,
+							                message: "No active game found."
+							            });
+				            }
+
+		            const question = await Question.findById(
+				                game.questions[game.currentQuestion]
+				            );
+
+		            if (!question) {
+				                return res.json({
+							                success: false,
+							                message: "Question not found."
+							            });
+				            }
+
+		            res.json({
+				                success: true,
+				                gameId: game._id,
+				                question: {
+							                id: question._id,
+							                question: question.question,
+							                options: question.options,
+							                number: game.currentQuestion + 1,
+							                total: 10,
+							                timer: game.mode === "daily" ? 15 : 10
+							            }
+				            });
 
 		        } catch (err) {
 
