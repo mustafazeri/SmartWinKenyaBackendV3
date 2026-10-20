@@ -509,9 +509,6 @@ exports.startDailyChallenge = async (req, res) => {
 					    }
 
 		    });
-					    }
-
-		    });
 
 		        } catch (err) {
 
