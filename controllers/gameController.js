@@ -346,7 +346,7 @@ exports.answerQuestion = async (req, res) => {
 
 							                options: nextQuestion.options,
 
-timer: game.mode === "daily" ? 15 : 10,
+timer: 15,
 							                number: game.currentQuestion + 1,
 
 							                total: 10
@@ -504,7 +504,11 @@ exports.startDailyChallenge = async (req, res) => {
 			        question: {
 					        ...questions[0],
 					        number: 1,
-					        total: 10
+					        total: 10,
+					        timer: 15
+					    }
+
+		    });
 					    }
 
 		    });
