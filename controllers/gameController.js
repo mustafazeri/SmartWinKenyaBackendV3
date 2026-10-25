@@ -508,7 +508,7 @@ exports.startDailyChallenge = async (req, res) => {
 					        timer: 15
 					    }
 
-		    });if (Number(answer) !== Number(question.answer)) {
+		    });
 		        } catch (err) {
 
 				        console.error(err);
