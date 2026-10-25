@@ -24,6 +24,43 @@ app.use("/auth", authRoutes);
 app.use("/admin", adminRoutes);
 app.use("/game", gameRoutes);
 app.use("/ai", aiRoutes);
+app.get("/wallet/:username", async (req, res) => {
+
+	    try {
+
+		            const User = require("./models/User");
+
+		            const user = await User.findOne({
+				                username: req.params.username
+				            });
+
+		            if (!user) {
+				                return res.json({
+							                success: false,
+							                message: "User not found."
+							            });
+				            }
+
+		            res.json({
+				                success: true,
+				                username: user.username,
+				                coins: user.coins,
+				                score: user.score,
+				                isAdmin: user.isAdmin || false
+				            });
+
+		        } catch (err) {
+
+				        console.error(err);
+
+				        res.json({
+						            success: false,
+						            message: "Server error."
+						        });
+
+				    }
+
+});
 app.use("/deposit", depositRoutes);
 app.use("/withdraw", withdrawRoutes);
 app.get("/mpesa/history/:username", async (req, res) => {
