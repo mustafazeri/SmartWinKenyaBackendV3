@@ -86,7 +86,10 @@ await Payment.create({
 });
 
 
-    return res.json(stkResponse.data);
+    return res.json({
+	        success: true,
+	        message: "📲 M-Pesa prompt sent. Enter your PIN to complete payment."
+    });
 
   } catch (err) {
     console.error(err.response?.data || err.message);
