@@ -176,6 +176,53 @@ mongoose.connect(process.env.MONGODB_URI)
 
     console.log("✅ MongoDB Connected");
 
+app.get("/payment-status/:checkoutRequestID", async (req, res) => {
+
+	    try {
+
+		            const payment = await Payment.findOne({
+				                checkoutRequestID: req.params.checkoutRequestID
+				            });
+
+		            if (!payment) {
+
+				                return res.json({
+							                success: false,
+							                message: "Payment not found"
+							            });
+
+				            }
+
+
+		            return res.json({
+
+				                success: true,
+
+				                status: payment.status,
+
+				                username: payment.username,
+
+				                amount: payment.amount
+
+				            });
+
+
+		        } catch (err) {
+
+				        console.error(err);
+
+				        res.json({
+
+						            success: false,
+
+						            message: "Server error"
+
+						        });
+
+				    }
+
+});
+
     app.listen(PORT, () => {
         console.log(`🚀 Server running on port ${PORT}`);
 	    checkQuestionBank();

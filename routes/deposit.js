@@ -88,7 +88,8 @@ await Payment.create({
 
     return res.json({
 	        success: true,
-	        message: "📲 M-Pesa prompt sent. Enter your PIN to complete payment."
+	        message: "📲 M-Pesa prompt sent. Enter your PIN to complete payment.",
+	        checkoutRequestID: stkResponse.data.CheckoutRequestID
     });
 
   } catch (err) {
