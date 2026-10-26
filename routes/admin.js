@@ -229,4 +229,44 @@ router.post("/addCoins", async (req, res) => {
 				    }
 
 });
+// SEARCH USER
+// router.get("/user/:username", async (req, res) => {
+//
+//     try {
+//
+//             const user = await User.findOne({
+//                         username: req.params.username
+//                                 });
+//
+//                                         if (!user) {
+//
+//                                                     return res.json({
+//                                                                     success: false,
+//                                                                                     message: "User not found."
+//                                                                                                 });
+//
+//                                                                                                         }
+//
+//                                                                                                                 res.json({
+//                                                                                                                             success: true,
+//                                                                                                                                         user: {
+//                                                                                                                                                         username: user.username,
+//                                                                                                                                                                         coins: user.coins,
+//                                                                                                                                                                                         score: user.score
+//                                                                                                                                                                                                     }
+//                                                                                                                                                                                                             });
+//
+//
+//                                                                                                                                                                                                                 } catch (err) {
+//
+//                                                                                                                                                                                                                         console.error(err);
+//
+//                                                                                                                                                                                                                                 res.json({
+//                                                                                                                                                                                                                                             success: false,
+//                                                                                                                                                                                                                                                         message: "Server error."
+//                                                                                                                                                                                                                                                                 });
+//
+//                                                                                                                                                                                                                                                                     }
+//
+//                                                                                                                                                                                                                                                                     });
 module.exports = router;
