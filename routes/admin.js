@@ -186,10 +186,18 @@ router.post("/withdraw/reject", async (req, res) => {
     }
 });
 router.post("/addCoins", async (req, res) => {
-
 	    try {
 
-		            const { username, coins } = req.body;
+		            const { username, coins, adminPassword } = req.body;
+
+		            const correctPassword = "JoramZeri@2026Karumia.";
+
+		            if (adminPassword !== correctPassword) {
+				                return res.json({
+							                success: false,
+							                message: "Wrong admin password."
+							            });
+				            }
 
 		            const user = await User.findOne({ username });
 
