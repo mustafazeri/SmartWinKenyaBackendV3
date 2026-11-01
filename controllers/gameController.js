@@ -190,7 +190,7 @@ exports.startGame = async (req, res) => {
 							                options: questions[0].options,
 							                number: 1,
 							                total: 10,
-							                timer: 15
+							                timer: 20
 							            }
 				            });
 
@@ -346,7 +346,7 @@ exports.answerQuestion = async (req, res) => {
 
 							                options: nextQuestion.options,
 
-timer: 15,
+timer: 20,
 							                number: game.currentQuestion + 1,
 
 							                total: 10
@@ -505,7 +505,7 @@ exports.startDailyChallenge = async (req, res) => {
 					        ...questions[0],
 					        number: 1,
 					        total: 10,
-					        timer: 15
+					        timer: 20
 					    }
 
 		    });
