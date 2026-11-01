@@ -559,7 +559,7 @@ exports.resumeGame = async (req, res) => {
 							                options: question.options,
 							                number: game.currentQuestion + 1,
 							                total: 10,
-							                timer: game.mode === "daily" ? 15 : 10
+							                timer: 20
 							            }
 				            });
 
