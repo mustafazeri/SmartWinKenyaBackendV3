@@ -34,17 +34,7 @@ router.post("/", async (req, res) => {
         }
 
         // 1 coin = 1 KSh
-        const pendingWithdrawal = await Withdrawal.findOne({
-		    username,
-		    status: "Pending"
-	});
-
-	    if (pendingWithdrawal) {
-		        return res.json({
-				        success: false,
-				        message: "You already have a pending withdrawal."
-				    });
-	    }
+        
 	    const amount = Number(coins);
 
         user.coins -= Number(coins);
