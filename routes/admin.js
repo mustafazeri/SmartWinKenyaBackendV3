@@ -229,6 +229,73 @@ router.post("/addCoins", async (req, res) => {
 				    }
 
 });
+// Remove Coins
+ router.post("/removeCoins", async (req, res) => {
+
+   try {
+
+           const { username, coins, adminPassword } = req.body;
+
+                 const correctPassword = "JoramZeri@2026Karumia.";
+
+                         if (adminPassword !== correctPassword) {
+
+                                    return res.json({
+                                                      success: false,
+                                                                      message: "Wrong admin password."
+                                                                                 });
+
+                                                                                         }
+
+
+                                                                                                    const user = await User.findOne({ username });
+
+                                                                                                          if (!user) {
+
+                                                                                                                    return res.json({
+                                                                                                                                     success: false,
+                                                                                                                                                     message: "User not found."
+                                                                                                                                                                 });
+
+                                                                                                                                                                        }
+
+
+                                                                                                                                                                                 if (user.coins < Number(coins)) {
+
+                                                                                                                                                                                               return res.json({
+                                                                                                                                                                                                              success: false,
+                                                                                                                                                                                                                            message: "User does not have enough coins."
+                                                                                                                                                                                                                                          });
+
+                                                                                                                                                                                                                                                 }
+
+
+                                                                                                                                                                                                                                                          user.coins -= Number(coins);
+
+
+                                                                                                                                                                                                                                                                   await user.save();
+                                                                                                                                                                                                                                                                        res.json({
+
+                                                                                                                                                                                                                                                                                      success: true,                                                                                                                                                                                                                                                                                              balance: user.coins,
+                                                                                                                                                                                                                                                                                                             message: "Coins removed successfully."
+
+                                                                                                                                                                                                                                                                                                                       });
+
+
+                                                                                                                                                                                                                                                                                                                        } catch (err) {
+
+                                                                                                                                                                                                                                                                                                                                  console.error(err);
+
+                                                                                                                                                                                                                                                                                                                                         res.json({
+
+                                                                                                                                                                                                                                                                                                                                                      success: false,
+
+                                                                                                                                                                                                                                                                                                                                                                     message: "Server error."
+
+                                                                                                                                                                                                                                                                                                                                                                            });
+                                                                                                                                                                                                                                                                                                                                                                                }
+
+                                                                                                                                                                                                                                                                                                                                                                                 });
 // SEARCH USER
  router.get("/user/:username", async (req, res) => {
 
