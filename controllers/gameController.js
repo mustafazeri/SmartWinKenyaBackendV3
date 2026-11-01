@@ -459,8 +459,17 @@ exports.startDailyChallenge = async (req, res) => {
 		    await user.save();
 		    const questions = await Question.aggregate([
 			        {
-					        $sample: {
-							            size: 10
+					        $sample:{
+							            size:10
+							        }
+					    },
+			        {
+					        $project:{
+							            question:1,
+							            options:1,
+							            answer:1,
+							            category:1,
+							            difficulty:1
 							        }
 					    }
 		    ]);
