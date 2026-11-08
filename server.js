@@ -7,7 +7,7 @@ const cors = require("cors");
 
 const User = require("./models/User");
 const Payment = require("./models/Payment");
-
+const OwnerTransaction = require("./models/OwnerTransaction");
 const authRoutes = require("./routes/auth");
 const adminRoutes = require("./routes/admin");
 const gameRoutes = require("./routes/game");
@@ -127,6 +127,18 @@ app.post("/callback", async (req, res) => {
             payment.mpesaReceipt = receipt;
 
             await payment.save();
+		await OwnerTransaction.create({
+
+			    type: "Deposit",
+
+			    username: payment.username,
+
+			    amount: payment.amount,
+
+			    description:
+			    "M-Pesa Deposit"
+
+		});
 
             console.log("Receipt saved:", receipt);
 

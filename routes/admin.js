@@ -3,6 +3,7 @@ const router = express.Router();
 
 const User = require("../models/User");
 const Payment = require("../models/Payment");
+const OwnerTransaction = require("../models/OwnerTransaction");
 const Withdrawal = require("../models/Withdrawal");
 async function checkAdmin(req, res) {
 
@@ -333,4 +334,81 @@ router.post("/addCoins", async (req, res) => {
                                                                                                                                                                                                                                                                      }
 
                                                                                                                                                                                                                                                                      });
+// OWNER WALLET
+ router.get("/ownerWallet", async (req, res) => {
+
+     try {
+
+           const admin = await checkAdmin(req, res);
+
+                   if (!admin) return;
+
+
+                           const transactions = await OwnerTransaction
+                                        .find()
+                                                    .sort({ createdAt: -1 });
+
+
+                                                          let totalDeposits = 0;
+                                                                   let totalWithdrawals = 0;
+                                                                          let totalStakes = 0;
+                                                                                   let totalRewards = 0;
+
+
+                                                                                           transactions.forEach(t => {
+
+                                                                                                       if(t.type === "Deposit")
+                                                                                                                        totalDeposits += t.amount;
+
+
+                                                                                                                                  if(t.type === "Withdrawal")
+                                                                                                                                                   totalWithdrawals += t.amount;
+
+
+                                                                                                                                                                if(t.type === "Game Stake")
+                                                                                                                                                                               totalStakes += t.amount;
+
+
+                                                                                                                                                                                          if(t.type === "Reward")
+                                                                                                                                                                                                           totalRewards += t.amount;
+                                                                                                                                                                                                                  });
+
+
+                                                                                                                                                                                                                          res.json({
+
+                                                                                                                                                                                                                                      success:true,
+
+                                                                                                                                                                                                                                                   totalDeposits,
+
+                                                                                                                                                                                                                                                               totalWithdrawals,
+
+                                                                                                                                                                                                                                                                          totalStakes,
+
+                                                                                                                                                                                                                                                                                       totalRewards,
+
+                                                                                                                                                                                                                                                                                                    availableCash:
+                                                                                                                                                                                                                                                                                                                    totalDeposits - totalWithdrawals,
+
+                                                                                                                                                                                                                                                                                                                              profit:
+                                                                                                                                                                                                                                                                                                                                                totalStakes - totalRewards,
+
+                                                                                                                                                                                                                                                                                                                                                         transactions
+                                                                                                                                                                                                                                                                                                                                                                   });
+
+
+                                                                                                                                                                                                                                                                                                                                                                       } catch(err){
+
+                                                                                                                                                                                                                                                                                                                                                                              console.error(err);
+
+                                                                                                                                                                                                                                                                                                                                                                                       res.json({
+
+                                                                                                                                                                                                                                                                                                                                                                                                   success:false,
+
+                                                                                                                                                                                                                                                                                                                                                                                                                message:"Server error."
+
+                                                                                                                                                                                                                                                                                                                                                                                                                       });
+
+                                                                                                                                                                                                                                                                                                                                                                                                                          }
+
+                                                                                                                                                                                                                                                                                                                                                                                                                            });
 module.exports = router;
