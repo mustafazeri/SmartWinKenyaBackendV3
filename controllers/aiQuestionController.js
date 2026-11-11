@@ -15,79 +15,35 @@ exports.generateQuestions = async (req, res) => {
             category = "General"
         } = req.body;
 
-        const prompt = `
-Generate ${amount} unique multiple-choice quiz questions.
+        
+const prompt = `
+	    Generate ${amount} unique multiple-choice quiz questions.
 
-Difficulty:
-${difficulty}
+		    Category: ${category}
+	    Difficulty: ${difficulty}
 
-Category:
-${category}
+	    Rules:
+	    - Questions must only be about the category.
+		    - Use simple English.
+		    - Suitable for players aged 13+.
+		    - Exactly 4 options per question.
+		    - Only 1 correct answer.
+		    - Answer must be the option index: 0, 1, 2, or 3.
+		    - No explanations.
+		    - No markdown.
 
-Generate ONLY questions from the category above.
+		    Return ONLY valid JSON in this format:
 
-Every question MUST belong ONLY to the requested category.
-
-Generate ONLY ${difficulty} questions.
-
-Return ONLY valid JSON.
-
-Do not return markdown.
-
-Do not return explanations.
-
-No mathematics calculations.
-
-No offensive, political, gambling, adult or hateful content.
-
-Questions must be suitable for players aged 13+.
-
-Use simple English.
-
-Do not repeat similar questions.
-
-Every question must contain:
-
-question
-
-options
-
-answer
-
-category
-
-difficulty
-
-Exactly four options.
-
-Only ONE option is correct.
-
-The answer must be:
-
-0
-1
-2
-or
-3
-
-Example:
-
-[
-{
-"question":"Which city is the capital of Kenya?",
-"options":[
-"Nairobi",
-"Mombasa",
-"Kisumu",
-"Nakuru"
-],
-"answer":0,
-"category":"Kenya",
-"difficulty":"Easy"
-}
-]
-`;
-
+	    [
+		     {
+			       "question":"Question text",
+			       "options":["A","B","C","D"],
+			       "answer":0,
+			       "category":"${category}",
+			       "difficulty":"${difficulty}"
+			      }
+	    ]
+	    `;
         let response;
 
         for (let attempt = 1; attempt <= 3; attempt++) {

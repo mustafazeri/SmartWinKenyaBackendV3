@@ -1,6 +1,8 @@
 const User = require("../models/User");
 const Question = require("../models/Question");
 const GameSession = require("../models/GameSession");
+const OwnerTransaction = require("../models/OwnerTransaction");
+const OwnerWallet = require("../models/OwnerWallet");
 const CATEGORIES = [
 	    "Kenya",
 	    "Science",
@@ -10,10 +12,13 @@ const CATEGORIES = [
 	    "Sports",
 	    "History",
 	    "Business",
+	    "Biblical",
 	    "English",
 	    "IQ"
 ];
 exports.startGame = async (req, res) => {
+
+console.log("START GAME HIT");
 
 	try {
 		            const { username, stake } = req.body;
@@ -59,35 +64,35 @@ exports.startGame = async (req, res) => {
 		}
 
 		                  let easy = 6;
-		    let medium = 3;
-		    let hard = 1;
-		    let expert = 0;
+		let medium = 3;
+		let hard = 1;
+		let expert = 0;
 
-		    if (stake >= 51 && stake <= 150) {
+		if (stake >= 51 && stake <= 150) {
 
-			        easy = 3;
-			        medium = 5;
-			        hard = 2;
+			    easy = 3;
+			    medium = 5;
+			    hard = 2;
 
-		    }
+		}
 
-		    if (stake >= 151 && stake <= 300) {
+		if (stake >= 151 && stake <= 300) {
 
-			        easy = 2;
-			        medium = 3;
-			        hard = 4;
-			        expert = 1;
+			    easy = 2;
+			    medium = 3;
+			    hard = 4;
+			    expert = 1;
 
-		    }
+		}
 
-		    if (stake >= 301) {
+		if (stake >= 301) {
 
-			        easy = 0;
-			        medium = 2;
-			        hard = 5;
-			        expert = 3;
+			    easy = 0;
+			    medium = 2;
+			    hard = 5;
+			    expert = 3;
 
-		    }
+		}
 
 		    const questions = [];
 
@@ -167,6 +172,27 @@ exports.startGame = async (req, res) => {
 
 		            user.coins -= stake;
 		            await user.save();
+		await OwnerTransaction.create({
+
+			    type: "Game Stake",
+
+			    username: user.username,
+
+			    amount: stake,
+
+			    description: "Normal Game Stake"
+
+		});
+		console.log("OWNER GAME STAKE SAVED", stake);
+		let ownerWallet = await OwnerWallet.findOne();
+
+		if (!ownerWallet) {
+			    ownerWallet = await OwnerWallet.create({});
+		}
+
+		ownerWallet.totalGameStakes += stake;
+
+		await ownerWallet.save();
 
 		            const game = await GameSession.create({
 				                username,
@@ -309,6 +335,23 @@ exports.answerQuestion = async (req, res) => {
 				    user.gamesWon += 1;
 
 				    await user.save();
+
+				    await OwnerTransaction.create({
+					        type: "Game Reward",
+					        username: user.username,
+					        amount: reward,
+					        description: "Normal Game Reward"
+				    });
+
+				    let ownerWallet = await OwnerWallet.findOne();
+
+				    if (!ownerWallet) {
+					        ownerWallet = await OwnerWallet.create({});
+				    }
+
+				    ownerWallet.totalRewardsPaid += reward;
+
+				    await ownerWallet.save();
 
 				    await game.save();
 

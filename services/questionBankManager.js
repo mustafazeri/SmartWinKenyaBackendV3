@@ -23,8 +23,9 @@ const CATEGORIES = [
     "Entertainment",
     "Business",
     "English",
-    "Driving",
-    "IQ"
+	"Driving",
+	"IQ",
+	"Biblical"
 ];
 
 async function generateQuestions(difficulty, category, amount) {
