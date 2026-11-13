@@ -20,11 +20,17 @@ const ownerTransactionSchema = new mongoose.Schema({
 	    description: {
 		            type: String,
 		            default: ""
+		        },
+
+	    status: {
+		            type: String,
+		            default: "Completed"
 		        }
 
 }, {
 	    timestamps: true
 });
+
 
 module.exports = mongoose.model(
 	    "OwnerTransaction",
