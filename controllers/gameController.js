@@ -337,10 +337,17 @@ exports.answerQuestion = async (req, res) => {
 				    await user.save();
 
 				    await OwnerTransaction.create({
-					        type: "Game Reward",
+					        type: game.mode === "daily"
+					            ? "Daily Challenge Reward"
+					            : "Game Reward",
+
 					        username: user.username,
+
 					        amount: reward,
-					        description: "Normal Game Reward"
+
+					        description: game.mode === "daily"
+					            ? "Daily Challenge Prize"
+					            : "Normal Game Reward"
 				    });
 
 				    let ownerWallet = await OwnerWallet.findOne();
@@ -500,6 +507,19 @@ exports.startDailyChallenge = async (req, res) => {
 		    user.lastDailyChallenge = new Date();
 
 		    await user.save();
+		    await Payment.create({
+
+			        username,
+
+			        amount: 200,
+
+			        type: "Daily Challenge",
+
+			        status: "Completed",
+
+			        description: "Daily Challenge Entry"
+
+		    });
 		    const questions = await Question.aggregate([
 			        {
 					        $sample:{
