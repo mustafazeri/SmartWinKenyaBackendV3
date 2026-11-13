@@ -369,11 +369,14 @@ router.post("/addCoins", async (req, res) => {
                                                                    let totalWithdrawals = 0;
                                                                           let totalStakes = 0;
                                                                                    let totalRewards = 0;
+	     let adminAdjustments = 0;
 
 
                                                                                            transactions.forEach(t => {
 
-                                                                                                       if(t.type === "Deposit")
+         if(t.type === "Admin Coin Adjustment")
+												       adminAdjustments += t.amount;
+												   if(t.type === "Deposit")
                                                                                                                         totalDeposits += t.amount;
 
 
@@ -410,10 +413,13 @@ router.post("/addCoins", async (req, res) => {
                                                                                                                                                                                                                                                                                        totalRewards,
 
                                                                                                                                                                                                                                                                                                     availableCash:
-                                                                                                                                                                                                                                                                                                                    totalDeposits - totalWithdrawals,
+																												      totalDeposits +
+																												      totalStakes +
+																												      adminAdjustments -
+																												      totalWithdrawals,
 
                                                                                                                                                                                                                                                                                                                               profit:
-                                                                                                                                                                                                                                                                                                                                                totalStakes - totalRewards,
+																												      totalStakes - totalRewards + adminAdjustments,
 
                                                                                                                                                                                                                                                                                                                                                          transactions
                                                                                                                                                                                                                                                                                                                                                                    });
