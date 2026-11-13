@@ -507,7 +507,7 @@ exports.startDailyChallenge = async (req, res) => {
 		    user.lastDailyChallenge = new Date();
 
 		    await user.save();
-		    await Payment.create({
+		    await OwnerTransaction.create({
 
 			        username,
 
