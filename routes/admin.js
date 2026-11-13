@@ -479,4 +479,129 @@ router.post("/addCoins", async (req, res) => {
                                                                                                                                                                 }
 
                                                                                                                                                                 });
+// BUSINESS INSIGHTS
+ router.get("/businessInsights", async (req,res)=>{
+
+   try {
+
+             const admin = await checkAdmin(req,res);
+
+                     if(!admin) return;
+
+
+                            const users = await User.find();
+
+
+                                    let totalCoins = 0;
+                                            let gamesPlayed = 0;
+
+
+                                                     users.forEach(user=>{
+
+                                                                 totalCoins += user.coins;
+
+                                                                            gamesPlayed += user.gamesPlayed || 0;
+                                                                                    });
+
+
+                                                                                             const transactions = await OwnerTransaction.find();
+
+
+                                                                                                    let totalDeposits = 0;
+                                                                                                             let totalWithdrawals = 0;
+                                                                                                                   let totalStakes = 0;
+                                                                                                                            let totalRewards = 0;
+                                                                                                                                   let adminAdjustments = 0;
+
+
+                                                                                                                                             transactions.forEach(t=>{
+
+                                                                                                                                                        if(t.type === "Deposit")
+                                                                                                                                                                         totalDeposits += t.amount;
+
+
+                                                                                                                                                                                   if(t.type === "Withdrawal")
+                                                                                                                                                                                                     totalWithdrawals += t.amount;
+
+
+                                                                                                                                                                                                                if(
+                                                                                                                                                                                                                               t.type === "Game Stake" ||
+                                                                                                                                                                                                                                                t.type === "Daily Challenge"
+                                                                                                                                                                                                                                                            )                                                                                                                                                                                                                                                                           totalStakes += t.amount;
+
+
+                                                                                                                                                                                                                                                                                         if(
+                                                                                                                                                                                                                                                                                                     t.type === "Reward" ||
+                                                                                                                                                                                                                                                                                                                        t.type === "Game Reward" ||
+                                                                                                                                                                                                                                                                                                                                        t.type === "Daily Challenge Reward"
+                                                                                                                                                                                                                                                                                                                                                  )
+                                                                                                                                                                                                                                                                                                                                                                  totalRewards += t.amount;
+
+
+                                                                                                                                                                                                                                                                                                                                                                               if(t.type === "Admin Coin Adjustment")
+                                                                                                                                                                                                                                                                                                                                                                                                 adminAdjustments += t.amount;
+
+
+                                                                                                                                                                                                                                                                                                                                                                                                       });
+
+
+
+                                                                                                                                                                                                                                                                                                                                                                                                              res.json({
+
+                                                                                                                                                                                                                                                                                                                                                                                                                            success:true,
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                      totalUsers: users.length,
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                   totalCoins,
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                              totalWalletValue: totalCoins,
+
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                           totalDeposits,
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      totalWithdrawals,
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   totalStakes,
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                totalRewards,
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         adminAdjustments,
+
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      availableCash:
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   totalDeposits +
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                totalStakes +
+ 
+ adminAdjustments -
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        totalWithdrawals,
+
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   profit:
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                totalStakes +
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          adminAdjustments -
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         totalRewards,
+
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    gamesPlayed
+
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             });
+
+
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }catch(err){
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        console.error(err);
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 res.json({
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            success:false,
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         message:"Server error"
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               });
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  }
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    });
 module.exports = router;
