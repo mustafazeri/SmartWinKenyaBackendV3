@@ -365,12 +365,19 @@ router.post("/addCoins", async (req, res) => {
                                                                                                                                                    totalWithdrawals += t.amount;
 
 
-                                                                                                                                                                if(t.type === "Game Stake")
-                                                                                                                                                                               totalStakes += t.amount;
+                                                                                                                                                                if(
+																					    t.type === "Game Stake" ||
+																					    t.type === "Daily Challenge"
+																				)
+													       totalStakes += t.amount;
 
 
-                                                                                                                                                                                          if(t.type === "Reward")
-                                                                                                                                                                                                           totalRewards += t.amount;
+                                                                                                                                                                                          if(
+																								      t.type === "Reward" ||
+																								      t.type === "Daily Challenge Reward" ||
+																								      t.type === "Game Reward"
+																							  )
+													       totalRewards += t.amount;
                                                                                                                                                                                                                   });
 
 
