@@ -273,14 +273,30 @@ router.post("/addCoins", async (req, res) => {
 
                                                                                                                                                                                                                                                           user.coins -= Number(coins);
 
+	   await user.save();
 
-                                                                                                                                                                                                                                                                   await user.save();
-                                                                                                                                                                                                                                                                        res.json({
+	   await OwnerTransaction.create({
 
-                                                                                                                                                                                                                                                                                      success: true,                                                                                                                                                                                                                                                                                              balance: user.coins,
-                                                                                                                                                                                                                                                                                                             message: "Coins removed successfully."
+		       type: "Admin Coin Adjustment",
 
-                                                                                                                                                                                                                                                                                                                       });
+		       username: username,
+
+		       amount: Number(coins),
+
+		       description: "Owner balance adjustment",
+
+		       status: "Completed"
+
+	   });
+
+
+	   res.json({
+
+		       success: true,
+
+		       balance: user.coins
+
+	   });
 
 
                                                                                                                                                                                                                                                                                                                         } catch (err) {
