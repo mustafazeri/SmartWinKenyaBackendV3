@@ -440,4 +440,43 @@ router.post("/addCoins", async (req, res) => {
                                                                                                                                                                                                                                                                                                                                                                                                                           }
 
                                                                                                                                                                                                                                                                                                                                                                                                                             });
+// LIFETIME FINANCIAL HISTORY
+ router.get("/financialHistory", async (req,res)=>{
+
+    try {
+
+             const admin = await checkAdmin(req,res);
+
+                   if(!admin) return;
+
+
+                            const transactions = await OwnerTransaction
+                                       .find()
+                                                    .sort({createdAt:-1});
+
+
+                                                             res.json({
+                                                                         success:true,
+
+                                                                                     totalTransactions: transactions.length,
+
+                                                                                                transactions
+
+                                                                                                         });
+
+
+                                                                                                             } catch(err){
+
+                                                                                                                    console.error(err);
+
+                                                                                                                             res.json({
+
+                                                                                                                                         success:false,
+                                                                                                                                                    message:"Server error."
+
+                                                                                                                                                             });
+
+                                                                                                                                                                }
+
+                                                                                                                                                                });
 module.exports = router;
