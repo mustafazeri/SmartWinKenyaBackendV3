@@ -638,20 +638,32 @@ router.get("/businessAnalytics", async (req, res) => {
 		            let todayIncome = 0;
 		            let weekIncome = 0;
 		            let monthIncome = 0;
-
+let todayWithdrawals = 0;
 		            let deposits = {};
 
 		            transactions.forEach(t=>{
 
+				        const date = new Date(t.createdAt);
+
 				        if(t.status === "Completed"){
 
-						        if(new Date(t.createdAt) >= today)
-							            todayIncome += t.amount;
+						        if(date >= today){
 
-						        if(new Date(t.createdAt) >= week)
+								            todayIncome += t.amount;
+
+								            if(
+										                    t.type === "Withdrawal" ||
+										                    t.description?.toLowerCase().includes("withdraw")
+										                ){
+										                    todayWithdrawals += t.amount;
+										                }
+
+								        }
+
+						        if(date >= week)
 							            weekIncome += t.amount;
 
-						        if(new Date(t.createdAt) >= month)
+						        if(date >= month)
 							            monthIncome += t.amount;
 
 						        deposits[t.username] =
@@ -682,10 +694,19 @@ router.get("/businessAnalytics", async (req, res) => {
 		            const mostActive =
 			                [...users].sort((a,b)=>b.gamesPlayed-a.gamesPlayed)[0];
 
-		            res.json({
+		          const todayProfit = todayIncome - todayWithdrawals;
+
+		    const profitMargin =
+			    todayIncome > 0
+		    ? ((todayProfit / todayIncome) * 100).toFixed(1)
+		    : 0;
+		    res.json({
 				        success: true,
 
 				        totalUsers: users.length,
+			    todayWithdrawals,
+			    todayProfit,
+			    profitMargin,
 
 				        todayIncome,
 				        weekIncome,
