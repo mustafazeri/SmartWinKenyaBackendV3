@@ -683,24 +683,20 @@ router.get("/businessAnalytics", async (req, res) => {
 			                [...users].sort((a,b)=>b.gamesPlayed-a.gamesPlayed)[0];
 
 		            res.json({
+				        success: true,
 
-				                success:true,
+				        totalUsers: users.length,
 
-				                todayIncome,
+				        todayIncome,
+				        weekIncome,
+				        monthIncome,
 
-				                weekIncome,
+				        highestDepositor,
+				        highestDeposit,
 
-				                monthIncome,
-
-				                highestDepositor,
-
-				                highestDeposit,
-
-				                richestPlayer,
-
-				                mostActive
-
-				            });
+				        richestPlayer,
+				        mostActive
+			    });
 
 		        }catch(err){
 
