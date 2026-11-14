@@ -604,4 +604,112 @@ router.post("/addCoins", async (req, res) => {
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   }
 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     });
+router.get("/businessAnalytics", async (req, res) => {
+
+	    try{
+
+		            const username = req.headers.username;
+
+		            const admin = await User.findOne({ username });
+
+		            if(!admin || !admin.isAdmin){
+
+				                return res.json({
+							                success:false,
+							                message:"Unauthorized"
+							            });
+
+				            }
+
+		            const transactions =
+			                await Payment.find().sort({createdAt:-1});
+
+		            const users = await User.find();
+
+		            const today = new Date();
+		            today.setHours(0,0,0,0);
+
+		            const week = new Date();
+		            week.setDate(week.getDate()-7);
+
+		            const month = new Date();
+		            month.setMonth(month.getMonth()-1);
+
+		            let todayIncome = 0;
+		            let weekIncome = 0;
+		            let monthIncome = 0;
+
+		            let deposits = {};
+
+		            transactions.forEach(t=>{
+
+				                if(t.type==="Deposit"){
+
+							                if(new Date(t.createdAt)>=today)
+								                    todayIncome += t.amount;
+
+							                if(new Date(t.createdAt)>=week)
+								                    weekIncome += t.amount;
+
+							                if(new Date(t.createdAt)>=month)
+								                    monthIncome += t.amount;
+
+							                deposits[t.username] =
+								                    (deposits[t.username] || 0)
+							                    + t.amount;
+
+							            }
+
+				            });
+
+		            let highestDepositor = "None";
+		            let highestDeposit = 0;
+
+		            Object.keys(deposits).forEach(name=>{
+
+				                if(deposits[name] > highestDeposit){
+
+							                highestDeposit = deposits[name];
+							                highestDepositor = name;
+
+							            }
+
+				            });
+
+		            const richestPlayer =
+			                [...users].sort((a,b)=>b.coins-a.coins)[0];
+
+		            const mostActive =
+			                [...users].sort((a,b)=>b.gamesPlayed-a.gamesPlayed)[0];
+
+		            res.json({
+
+				                success:true,
+
+				                todayIncome,
+
+				                weekIncome,
+
+				                monthIncome,
+
+				                highestDepositor,
+
+				                highestDeposit,
+
+				                richestPlayer,
+
+				                mostActive
+
+				            });
+
+		        }catch(err){
+
+				        res.json({
+						            success:false,
+						            message:err.message
+						        });
+
+				    }
+
+});
 module.exports = router;
