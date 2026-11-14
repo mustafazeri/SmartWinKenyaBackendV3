@@ -685,14 +685,6 @@ let todayWithdrawals = 0;
 
 			    });
 
-		    const todayProfit =
-			        todayIncome - todayWithdrawals;
-
-		    const profitMargin =
-			        todayIncome > 0
-		            ? Math.round((todayProfit / todayIncome) * 100)
-		            : 0;
-		
 
 		            let highestDepositor = "None";
 		            let highestDeposit = 0;
