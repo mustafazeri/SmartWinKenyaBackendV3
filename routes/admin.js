@@ -625,6 +625,7 @@ router.get("/businessAnalytics", async (req, res) => {
 			                await Payment.find().sort({createdAt:-1});
 
 		            const users = await User.find();
+		    const withdrawals = await Withdrawal.find();
 
 		            const today = new Date();
 		            today.setHours(0,0,0,0);
@@ -671,7 +672,26 @@ let todayWithdrawals = 0;
 
 						    }
 
+			    });withdrawals.forEach(w => {
+
+				        const date = new Date(w.createdAt);
+
+				        if (
+						        date >= today &&
+						        w.status === "Approved"
+						    ) {
+						        todayWithdrawals += w.amount;
+						    }
+
 			    });
+
+		    const todayProfit =
+			        todayIncome - todayWithdrawals;
+
+		    const profitMargin =
+			        todayIncome > 0
+		            ? Math.round((todayProfit / todayIncome) * 100)
+		            : 0;
 		
 
 		            let highestDepositor = "None";
