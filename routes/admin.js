@@ -643,24 +643,24 @@ router.get("/businessAnalytics", async (req, res) => {
 
 		            transactions.forEach(t=>{
 
-				                if(t.type==="Deposit"){
+				        if(t.status === "Completed"){
 
-							                if(new Date(t.createdAt)>=today)
-								                    todayIncome += t.amount;
+						        if(new Date(t.createdAt) >= today)
+							            todayIncome += t.amount;
 
-							                if(new Date(t.createdAt)>=week)
-								                    weekIncome += t.amount;
+						        if(new Date(t.createdAt) >= week)
+							            weekIncome += t.amount;
 
-							                if(new Date(t.createdAt)>=month)
-								                    monthIncome += t.amount;
+						        if(new Date(t.createdAt) >= month)
+							            monthIncome += t.amount;
 
-							                deposits[t.username] =
-								                    (deposits[t.username] || 0)
-							                    + t.amount;
+						        deposits[t.username] =
+							            (deposits[t.username] || 0) + t.amount;
 
-							            }
+						    }
 
-				            });
+			    });
+		
 
 		            let highestDepositor = "None";
 		            let highestDeposit = 0;
