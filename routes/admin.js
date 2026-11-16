@@ -516,11 +516,22 @@ router.post("/addCoins", async (req, res) => {
 
                                                                                                                                              transactions.forEach(t=>{
 
-                                                                                                                                                        if(t.type === "Deposit")
+                                                                                                                                                        if (
+																				    t.type === "Deposit" ||
+																				    t.type === "Game Stake" ||
+																				    t.type === "Daily Challenge" ||
+																				    t.type === "Admin Coin Adjustment"
+																			) {
                                                                                                                                                                          totalDeposits += t.amount;
 
 
-                                                                                                                                                                                   if(t.type === "Withdrawal")
+                                                                                                                                                                                   if (t.type === "Withdrawal") {
+
+																							       if (new Date(t.createdAt) >= today) {
+																								               todayWithdrawals += t.amount;
+																								           }
+
+																						   }
                                                                                                                                                                                                      totalWithdrawals += t.amount;
 
 
@@ -621,8 +632,7 @@ router.get("/businessAnalytics", async (req, res) => {
 
 				            }
 
-		            const transactions =
-			                await Payment.find().sort({createdAt:-1});
+		            const transactions = await OwnerTransaction.find().sort({ createdAt: -1 });
 
 		            const users = await User.find();
 		    const withdrawals = await Withdrawal.find();
