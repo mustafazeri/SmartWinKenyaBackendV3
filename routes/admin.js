@@ -230,6 +230,39 @@ router.post("/addCoins", async (req, res) => {
 				    }
 
 });
+// GET ALL USERS FOR ADMIN COIN MANAGEMENT
+ router.get("/users", async (req, res) => {
+
+   try {
+
+            const users = await User.find({})
+                   .select("username coins");
+
+
+                            res.json({
+
+                                       success: true,
+
+                                                    users
+
+                                                            });
+
+
+                                                               } catch(err){
+
+                                                                         console.error(err);
+
+                                                                                 res.json({
+
+                                                                                            success:false,
+
+                                                                                                        message:"Failed loading users"
+
+                                                                                                                });
+
+                                                                                                                   }
+
+                                                                                                                    });
 // Remove Coins
  router.post("/removeCoins", async (req, res) => {
 
