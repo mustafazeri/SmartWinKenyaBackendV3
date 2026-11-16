@@ -235,7 +235,7 @@ router.post("/addCoins", async (req, res) => {
 
    try {
 
-           const { username, coins, adminPassword } = req.body;
+           const { username, usernames, coins, adminPassword } = req.body;
 
                  const correctPassword = "JoramZeri@2026Karumia.";
 
@@ -246,7 +246,41 @@ router.post("/addCoins", async (req, res) => {
                                                                       message: "Wrong admin password."
                                                                                  });
 
-                                                                                         }
+                                                                                         }if (Array.isArray(usernames) && usernames.length > 0) {
+
+												     let updated = 0;
+												     let skipped = 0;
+
+												     for (const name of usernames) {
+
+													             const user = await User.findOne({ username: name });
+
+													             if (!user || user.coins < Number(coins)) {
+															                 skipped++;
+															                 continue;
+															             }
+
+													             user.coins -= Number(coins);
+													             await user.save();
+
+													             await OwnerTransaction.create({
+															                 type: "Admin Coin Adjustment",
+															                 username: name,
+															                 amount: Number(coins),
+															                 description: "Bulk owner balance adjustment",
+															                 status: "Completed"
+															             });
+
+													             updated++;
+													         }
+
+												     return res.json({
+													             success: true,
+													             updated,
+													             skipped
+													         });
+
+											 }
 
 
                                                                                                     const user = await User.findOne({ username });
@@ -656,4 +690,33 @@ let todayWithdrawals = 0;
 				    }
 
 });
+// GET ALL USERS
+ router.get("/allUsers", async (req, res) => {
+
+     try {
+
+           const admin = await checkAdmin(req, res);
+
+                     if (!admin) return;
+
+                             const users = await User.find(
+                                        {},
+                                                  "username coins"
+                                                             ).sort({ username: 1 });
+
+                                                                     res.json({
+                                                                                success: true,
+                                                                                             users
+                                                                                                    });
+
+                                                                                                       } catch (err) {
+
+                                                                                                                 res.json({
+                                                                                                                            success: false,
+                                                                                                                                        message: err.message
+                                                                                                                                               });
+
+                                                                                                                                                   }
+
+                                                                                                                                                    });
 module.exports = router;
