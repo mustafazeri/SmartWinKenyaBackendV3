@@ -501,6 +501,11 @@ router.get("/businessAnalytics", async (req, res) => {
 
 		            const users = await User.find();
 		    const withdrawals = await Withdrawal.find();
+		    let totalDeposits = 0;
+		    let totalWithdrawals = 0;
+		    let totalStakes = 0;
+		    let totalRewards = 0;
+		    let adminAdjustments = 0;
 
 		            const today = new Date();
 		            today.setHours(0,0,0,0);
@@ -520,6 +525,27 @@ let todayWithdrawals = 0;
 		            transactions.forEach(t=>{
 
 				        const date = new Date(t.createdAt);
+				    if (t.type === "Deposit")
+					        totalDeposits += t.amount;
+
+				    if (t.type === "Withdrawal")
+					        totalWithdrawals += t.amount;
+
+				    if (
+					        t.type === "Game Stake" ||
+					        t.type === "Daily Challenge"
+				    )
+					        totalStakes += t.amount;
+
+				    if (
+					        t.type === "Reward" ||
+					        t.type === "Game Reward" ||
+					        t.type === "Daily Challenge Reward"
+				    )
+					        totalRewards += t.amount;
+
+				    if (t.type === "Admin Coin Adjustment")
+					        adminAdjustments += t.amount;
 
 				        if(t.status === "Completed"){
 
@@ -581,6 +607,16 @@ let todayWithdrawals = 0;
 		            const mostActive =
 			                [...users].sort((a,b)=>b.gamesPlayed-a.gamesPlayed)[0];
 
+		    const availableCash =
+			        totalDeposits +
+			        totalStakes +
+			        adminAdjustments -
+			        totalWithdrawals;
+
+		    const lifetimeProfit =
+			        totalStakes +
+			        adminAdjustments -
+			        totalRewards;
 		          const todayProfit = todayIncome - todayWithdrawals;
 
 		    const profitMargin =
@@ -588,23 +624,27 @@ let todayWithdrawals = 0;
 		    ? ((todayProfit / todayIncome) * 100).toFixed(1)
 		    : 0;
 		    res.json({
-				        success: true,
+			        success: true,
+			        totalUsers: users.length,
+			        todayIncome,
+			        weekIncome,
+			        monthIncome,
+			        todayWithdrawals,
+			        todayProfit,
+			        profitMargin,
 
-				        totalUsers: users.length,
-			    todayWithdrawals,
-			    todayProfit,
-			    profitMargin,
+			        totalDeposits,
+			        totalWithdrawals,
+			        totalStakes,
+			        totalRewards,
+			        availableCash,
+			        lifetimeProfit,
 
-				        todayIncome,
-				        weekIncome,
-				        monthIncome,
-
-				        highestDepositor,
-				        highestDeposit,
-
-				        richestPlayer,
-				        mostActive
-			    });
+			        highestDepositor,
+			        highestDeposit,
+			        richestPlayer,
+			        mostActive
+		    });
 
 		        }catch(err){
 
