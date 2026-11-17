@@ -209,7 +209,7 @@ router.post("/addCoins", async (req, res) => {
 				            }
 
 
-		             Bulk add
+		             // Bulk add
 		          if(Array.isArray(usernames) && usernames.length > 0){
 		    
 		                       let updated = 0;
