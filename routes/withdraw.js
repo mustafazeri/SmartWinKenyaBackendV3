@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-
+const Notification = require("../models/Notification");
 const User = require("../models/User");
 const Withdrawal = require("../models/Withdrawal");
 
@@ -48,7 +48,11 @@ router.post("/", async (req, res) => {
             coins: Number(coins),
             amount,
             status: "Pending"
-        });
+        });await Notification.create({
+		    username,
+		    title: "Withdrawal Submitted",
+		    message: `Your withdrawal request for KSh ${amount} has been submitted and is awaiting approval.`
+	});
 
         res.json({
 		    success: true,

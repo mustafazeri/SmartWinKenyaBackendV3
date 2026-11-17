@@ -2,7 +2,7 @@ const express = require("express");
 const axios = require("axios");
 const Payment = require("../models/Payment");
 const router = express.Router();
-
+const Notification = require("../models/Notification");
 router.post("/", async (req, res) => {
   try {
     const { username, phone, amount } = req.body;

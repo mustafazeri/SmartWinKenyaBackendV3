@@ -4,7 +4,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const { checkQuestionBank } = require("./services/questionBankManager");
 const cors = require("cors");
-
+const Notification = require("./models/Notification");
 const User = require("./models/User");
 const Payment = require("./models/Payment");
 const OwnerTransaction = require("./models/OwnerTransaction");
@@ -110,6 +110,14 @@ app.post("/callback", async (req, res) => {
             });
         }
 
+		if (payment.status === "Completed") {
+			    console.log("Duplicate callback ignored:", checkoutRequestID);
+
+			    return res.json({
+				            ResultCode: 0,
+				            ResultDesc: "Accepted"
+				        });
+		}
         if (callback.ResultCode === 0) {
 
             const callbackItems =
@@ -175,6 +183,11 @@ app.post("/callback", async (req, res) => {
                 }
 
                 await user.save();
+		    await Notification.create({
+			        username: payment.username,
+			        title: "Deposit Successful",
+			        message: `Your deposit of KSh ${payment.amount} was successful. ${payment.amount} coins have been added to your account.`
+		    });
 
                 console.log(
                     `✅ ${payment.amount} coins added to ${user.username}`

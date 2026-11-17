@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-
+const Notification = require("../models/Notification");
 const User = require("../models/User");
 const Payment = require("../models/Payment");
 const OwnerTransaction = require("../models/OwnerTransaction");
@@ -123,7 +123,23 @@ router.post("/withdraw/approve", async (req, res) => {
                 message: "Withdrawal not found."
             });
         }
-
+	    if (withdrawal.status === "Completed") {
+		        return res.json({
+				        success: false,
+				        message: "This withdrawal has already been approved."
+				    });
+	    }
+await OwnerTransaction.create({
+	    type: "Withdrawal",
+	    username: withdrawal.username,
+	    amount: withdrawal.amount,
+	    description: "M-Pesa Withdrawal"
+});
+	    await Notification.create({
+		        username: withdrawal.username,
+		        title: "Withdrawal Approved",
+		        message: `Your withdrawal of KSh ${withdrawal.amount} has been approved and will be processed shortly.`
+	    });
         withdrawal.status = "Completed";
         await withdrawal.save();
 
@@ -157,6 +173,12 @@ router.post("/withdraw/reject", async (req, res) => {
                 message: "Withdrawal not found."
             });
         }
+	    if (withdrawal.status !== "Pending") {
+		        return res.json({
+				        success: false,
+				        message: "This withdrawal has already been processed."
+				    });
+	    }
 
         const user = await User.findOne({
             username: withdrawal.username
@@ -170,6 +192,11 @@ router.post("/withdraw/reject", async (req, res) => {
         withdrawal.status = "Rejected";
         await withdrawal.save();
 
+	    await Notification.create({
+		        username: withdrawal.username,
+		        title: "Withdrawal Rejected",
+		        message: `Your withdrawal request was rejected. ${withdrawal.coins} coins have been returned to your account.`
+	    });
         res.json({
             success: true,
             message: "Withdrawal rejected and coins refunded."
