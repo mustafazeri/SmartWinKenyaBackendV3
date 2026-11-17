@@ -9,6 +9,7 @@ const User = require("./models/User");
 const Payment = require("./models/Payment");
 const OwnerTransaction = require("./models/OwnerTransaction");
 const authRoutes = require("./routes/auth");
+const notificationRoutes = require("./routes/notifications");
 const adminRoutes = require("./routes/admin");
 const gameRoutes = require("./routes/game");
 const aiRoutes = require("./routes/ai");
@@ -21,6 +22,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/auth", authRoutes);
+app.use("/notifications", notificationRoutes);
 app.use("/admin", adminRoutes);
 app.use("/game", gameRoutes);
 app.use("/ai", aiRoutes);
@@ -184,9 +186,10 @@ app.post("/callback", async (req, res) => {
 
                 await user.save();
 		    await Notification.create({
-			        username: payment.username,
+			        username: user.username,
 			        title: "Deposit Successful",
-			        message: `Your deposit of KSh ${payment.amount} was successful. ${payment.amount} coins have been added to your account.`
+			        message: `Your deposit of KSh ${payment.amount} was received. ${payment.amount} coins have been added to your wallet.`,
+			        read: false
 		    });
 
                 console.log(

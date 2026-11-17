@@ -48,11 +48,13 @@ router.post("/", async (req, res) => {
             coins: Number(coins),
             amount,
             status: "Pending"
-        });await Notification.create({
-		    username,
-		    title: "Withdrawal Submitted",
-		    message: `Your withdrawal request for KSh ${amount} has been submitted and is awaiting approval.`
-	});
+        });
+	    await Notification.create({
+		        username,
+		        title: "Withdrawal Submitted",
+		        message: `Your withdrawal request for KSh ${amount} has been received and is awaiting approval.`,
+		        read: false
+	    });
 
         res.json({
 		    success: true,

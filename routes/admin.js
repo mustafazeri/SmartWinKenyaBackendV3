@@ -138,7 +138,8 @@ await OwnerTransaction.create({
 	    await Notification.create({
 		        username: withdrawal.username,
 		        title: "Withdrawal Approved",
-		        message: `Your withdrawal of KSh ${withdrawal.amount} has been approved and will be processed shortly.`
+		        message: `Your withdrawal of KSh ${withdrawal.amount} has been approved and is being processed.`,
+		        read: false
 	    });
         withdrawal.status = "Completed";
         await withdrawal.save();
@@ -195,12 +196,9 @@ router.post("/withdraw/reject", async (req, res) => {
 	    await Notification.create({
 		        username: withdrawal.username,
 		        title: "Withdrawal Rejected",
-		        message: `Your withdrawal request was rejected. ${withdrawal.coins} coins have been returned to your account.`
+		        message: `Your withdrawal request for KSh ${withdrawal.amount} was rejected. The coins have been returned to your wallet.`,
+		        read: false
 	    });
-        res.json({
-            success: true,
-            message: "Withdrawal rejected and coins refunded."
-        });
 
     } catch (err) {
 
