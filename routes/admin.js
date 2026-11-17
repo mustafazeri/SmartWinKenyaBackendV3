@@ -187,49 +187,136 @@ router.post("/withdraw/reject", async (req, res) => {
     }
 });
 router.post("/addCoins", async (req, res) => {
-	    try {
 
-		            const { username, coins, adminPassword } = req.body;
+	    try{
+
+		            const {
+				                username,
+				                usernames,
+				                coins,
+				                adminPassword
+				            } = req.body;
 
 		            const correctPassword = "JoramZeri@2026Karumia.";
 
-		            if (adminPassword !== correctPassword) {
+		            if(adminPassword !== correctPassword){
+
 				                return res.json({
-							                success: false,
-							                message: "Wrong admin password."
+							                success:false,
+							                message:"Wrong admin password."
 							            });
+
 				            }
 
-		            const user = await User.findOne({ username });
 
-		            if (!user) {
-				                return res.json({
-							                success: false,
-							                message: "User not found."
-							            });
-				            }
+		             Bulk add
+		          if(Array.isArray(usernames) && usernames.length > 0){
+		    
+		                       let updated = 0;
+		                                 let skipped = 0;
+		    
+		                                               for(const name of usernames){
+		    
+		                                                               const user = await User.findOne({
+		                                                                                  username:name
+		                                                                                                 });
+		    
+		                                                                                                                    if(!user){
+		                                                                                                                                     skipped++;
+		                                                                                                                                                       continue;
+		                                                                                                                                                                           }
+		    
+		                                                                                                                                                                                           user.coins += Number(coins);
+		    
+		                                                                                                                                                                                                          await user.save();
+		    
+		                                                                                                                                                                                                                          await OwnerTransaction.create({
+		    
+		                                                                                                                                                                                                                                              type:"Admin Coin Adjustment",
+		    
+		                                                                                                                                                                                                                                                                   username:name,
+		    
+		                                                                                                                                                                                                                                                                                      amount:Number(coins),
+		
+		                                                                                                                                                                                                                                                                                                           description:"Admin added coins",
+		    
+		                                                                                                                                                                                                                                                                                                                               status:"Completed"
+		
+		                                                                                                                                                                                                                                                                                                                                              });
+		    
+		                                                                                                                                                                                                                                                                                                                                                              updated++;
+		    
+		                                                                                                                                                                                                                                                                                                                                                                          }
+		    
+		                                                                                                                                                                                                                                                                                                                                                                                      return res.json({
+		    
+		                                                                                                                                                                                                                                                                                                                                                                                                     success:true,
+		    
+		                                                                                                                                                                                                                                                                                                                                                                                                                       updated,
+		    
+		                                                                                                                                                                                                                                                                                                                                                                                                                                       skipped
+		    
+		                                                                                                                                                                                                                                                                                                                                                                                                                                                 });
+		    
+		                                                                                                                                                                                                                                                                                                                                                                                                                                                          }
+		    
+		    
+		                                                                                                                                                                                                                                                                                                                                                                                                                                                                    Single user add
+		                                                                                                                                                                                                                                                                                                                                                                                                                                                                            const user = await User.findOne({ username });
+		    
+		                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   if(!user){
+		    
+		                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            return res.json({
+		    
+		                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               success:false,
+		    
+		                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             message:"User not found."
+		    
+		                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           });
+		    
+		                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
+		    
+		                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         user.coins += Number(coins);
+		    
+		                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  await user.save();
+		    
+		                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           await OwnerTransaction.create({
+		    
+		                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  type:"Admin Coin Adjustment",
+		    
+		                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 username:username,
+		    
+		                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                amount:Number(coins),
+		    
+		                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          description:"Admin added coins",
+		    
+		                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     status:"Completed"
+		    
+		                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               });
+		    
+		                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     res.json({
+		    
+		                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   success:true,
+		    
+		                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              balance:user.coins
+		    
+		                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       });
+		    
+		                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          }catch(err){
+		    
+		                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  console.error(err);
+		    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      res.json({
 
-		            user.coins += Number(coins);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  success:false,
 
-		            await user.save();
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               message:"Server error."
 
-		            res.json({
-				                success: true,
-				                balance: user.coins
-				            });
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        });
 
-		        } catch (err) {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          }
 
-				        console.error(err);
-
-				        res.json({
-						            success: false,
-						            message: "Server error."
-						        });
-
-				    }
-
-});
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           });
 // GET ALL USERS FOR ADMIN COIN MANAGEMENT
  router.get("/users", async (req, res) => {
 
