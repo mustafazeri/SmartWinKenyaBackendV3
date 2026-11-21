@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Notification = require("../models/Notification");
+const AdminNotification = require("../models/AdminNotification");
 const User = require("../models/User");
 const Withdrawal = require("../models/Withdrawal");
 
@@ -54,6 +55,12 @@ router.post("/", async (req, res) => {
 		        title: "Withdrawal Submitted",
 		        message: `Your withdrawal request for KSh ${amount} has been received and is awaiting approval.`,
 		        read: false
+	    });
+	    await AdminNotification.create({
+		        title: "💸 New Withdrawal Request",
+		        message: `${username} requested a withdrawal of KSh ${amount}.`,
+		        type: "withdrawRequest",
+		        action: "withdrawalAdmin"
 	    });
 
         res.json({

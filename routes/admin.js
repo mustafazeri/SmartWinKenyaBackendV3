@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Notification = require("../models/Notification");
+const AdminNotification = require("../models/AdminNotification");
 const User = require("../models/User");
 const Payment = require("../models/Payment");
 const OwnerTransaction = require("../models/OwnerTransaction");

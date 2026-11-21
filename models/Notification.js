@@ -17,6 +17,16 @@ const notificationSchema = new mongoose.Schema({
 		            required: true
 		        },
 
+	    type: {
+		            type: String,
+		            default: "general"
+		        },
+
+	    action: {
+		            type: String,
+		            default: "home"
+		        },
+
 	    read: {
 		            type: Boolean,
 		            default: false
@@ -26,7 +36,5 @@ const notificationSchema = new mongoose.Schema({
 	    timestamps: true
 });
 
-module.exports = mongoose.model(
-	    "Notification",
-	    notificationSchema
-);
+module.exports =
+	mongoose.model("Notification", notificationSchema);

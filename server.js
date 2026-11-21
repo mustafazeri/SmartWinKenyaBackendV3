@@ -5,6 +5,8 @@ const mongoose = require("mongoose");
 const { checkQuestionBank } = require("./services/questionBankManager");
 const cors = require("cors");
 const Notification = require("./models/Notification");
+const adminNotificationsRoute =
+	    require("./routes/adminNotifications");
 const User = require("./models/User");
 const Payment = require("./models/Payment");
 const OwnerTransaction = require("./models/OwnerTransaction");
@@ -24,6 +26,10 @@ app.use(express.json());
 app.use("/auth", authRoutes);
 app.use("/notifications", notificationRoutes);
 app.use("/admin", adminRoutes);
+app.use(
+	    "/adminNotifications",
+	    adminNotificationsRoute
+);
 app.use("/game", gameRoutes);
 app.use("/ai", aiRoutes);
 app.get("/wallet/:username", async (req, res) => {
