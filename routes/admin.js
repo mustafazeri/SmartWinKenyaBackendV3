@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const Notification = require("../models/Notification");
+const GameSession = require("../models/GameSession");
+const QuizResult = require("../models/QuizResult");
 const AdminNotification = require("../models/AdminNotification");
 const User = require("../models/User");
 const Payment = require("../models/Payment");
@@ -493,6 +495,78 @@ router.post("/addCoins", async (req, res) => {
                                                                                                                                                                                                                                                                                                                                                                                 }
 
                                                                                                                                                                                                                                                                                                                                                                                  });
+router.post("/deleteUser", async (req, res) => {
+
+	    try {
+
+		            const { username, adminPassword } = req.body;
+
+		            const correctPassword = "JoramZeri@2026Karumia.";
+
+		            if (adminPassword !== correctPassword) {
+				                return res.json({
+							                success: false,
+							                message: "Wrong admin password."
+							            });
+				            }
+
+		            const user = await User.findOne({ username });
+
+		            if (!user) {
+				                return res.json({
+							                success: false,
+							                message: "User not found."
+							            });
+				            }
+
+		            await Notification.deleteMany({
+				                username: username
+				            });
+
+		            await Payment.deleteMany({
+				                username: username
+				            });
+
+		            await Withdrawal.deleteMany({
+				                username: username
+				            });
+
+		            await GameSession.deleteMany({
+				                username: username
+				            });
+
+		            await QuizResult.deleteMany({
+				                username: username
+				            });
+
+		            await User.deleteOne({
+				                username: username
+				            });
+
+		            await AdminNotification.create({
+				                title: "👤 Account Removed",
+				                message: `The account "${username}" was permanently removed by the administrator.`,
+				                type: "accountRemoval",
+				                action: "userManagement"
+				            });
+
+		            res.json({
+				                success: true,
+				                message: "Account removed successfully."
+				            });
+
+		        } catch (err) {
+
+				        console.error(err);
+
+				        res.json({
+						            success: false,
+						            message: "Server error."
+						        });
+
+				    }
+
+});
 // SEARCH USER
  router.get("/user/:username", async (req, res) => {
 
