@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const Notification = require("../models/Notification");
+const SecurityLog =
+	require("../models/SecurityLog");
 const AdminNotification = require("../models/AdminNotification");
 const User = require("../models/User");
 const Withdrawal = require("../models/Withdrawal");

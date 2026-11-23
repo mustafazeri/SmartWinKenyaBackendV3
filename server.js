@@ -181,6 +181,11 @@ app.post("/callback", async (req, res) => {
                         user.coins += 20;
 
                         await referrer.save();
+			    await SecurityLog.create({
+				        username: user.username,
+				        event: "Deposit",
+				        description: `Deposited KSh ${payment.amount}.`
+			    });
 await Notification.create({
 	    username: referrer.username,
 	    title: "🎁 Referral Reward",

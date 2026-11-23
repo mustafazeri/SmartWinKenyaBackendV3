@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const Notification = require("../models/Notification");
 const GameSession = require("../models/GameSession");
+const SecurityLog =
+	require("../models/SecurityLog");
 const QuizResult = require("../models/QuizResult");
 const AdminNotification = require("../models/AdminNotification");
 const User = require("../models/User");
@@ -538,8 +540,13 @@ router.post("/deleteUser", async (req, res) => {
 		            await QuizResult.deleteMany({
 				                username: username
 				            });
-
-		            await User.deleteOne({
+await SecurityLog.create({
+	    username,
+	    event: "Account Deleted",
+	    description: "Account deleted by administrator."
+});
+		         
+		    await User.deleteOne({
 				                username: username
 				            });
 
@@ -939,4 +946,33 @@ let todayWithdrawals = 0;
                                                                                                                                                    }
 
                                                                                                                                                     });
+router.get("/securityLog", async (req, res) => {
+
+	    try {
+
+		            const admin = await checkAdmin(req, res);
+
+		            if (!admin) return;
+
+		            const logs =
+			                await SecurityLog.find()
+		                .sort({ createdAt: -1 });
+
+		            res.json({
+				                success: true,
+				                logs
+				            });
+
+		        } catch (err) {
+
+				        console.error(err);
+
+				        res.json({
+						            success: false,
+						            message: "Server error."
+						        });
+
+				    }
+
+});
 module.exports = router;

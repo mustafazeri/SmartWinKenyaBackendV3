@@ -13,6 +13,43 @@ const userSchema = new mongoose.Schema({
 		            type: String,
 		            required: true
 		        },
+	fullName: {
+		    type: String,
+		    required: true,
+		    trim: true
+	},
+
+	nationalId: {
+		    type: String,
+		    required: true,
+		    unique: true,
+		    trim: true
+	},
+
+	failedResetAttempts: {
+		    type: Number,
+		    default: 0
+	},
+
+	resetLockedUntil: {
+		    type: Date,
+		    default: null
+	},
+	
+	resetLockLevel: {
+		    type: Number,
+		    default: 0
+	},
+	verified: {
+		    type: Boolean,
+		    default: true
+	},
+	phone: {
+		    type: String,
+		    required: true,
+		    unique: true,
+		    trim: true
+	},
 
 	    isAdmin: {
 		            type: Boolean,

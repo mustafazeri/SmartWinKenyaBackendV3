@@ -2,6 +2,8 @@ const User = require("../models/User");
 const Question = require("../models/Question");
 const GameSession = require("../models/GameSession");
 const OwnerTransaction = require("../models/OwnerTransaction");
+const SecurityLog =
+	require("../models/SecurityLog");
 const OwnerWallet = require("../models/OwnerWallet");
 const Notification = require("../models/Notification");
 const AdminNotification = require("../models/AdminNotification");
