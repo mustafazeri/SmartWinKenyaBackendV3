@@ -181,8 +181,20 @@ app.post("/callback", async (req, res) => {
                         user.coins += 20;
 
                         await referrer.save();
-
+await Notification.create({
+	    username: referrer.username,
+	    title: "🎁 Referral Reward",
+	    message: `You earned 20 bonus coins because ${user.username} completed their first deposit.`,
+	    action: "wallet"
+});
+			    await Notification.create({
+				        username: user.username,
+				        title: "🎁 Referral Bonus",
+				        message: "Congratulations! You received 20 bonus coins for using a referral code.",
+				        action: "wallet"
+			    });
                         user.referralRewardPaid = true;
+
 
                         console.log(
                             `🎁 Referral reward: ${referrer.username} and ${user.username} received 20 coins each`
@@ -197,6 +209,12 @@ app.post("/callback", async (req, res) => {
 			        message: `Your deposit of KSh ${payment.amount} was received. ${payment.amount} coins have been added to your wallet.`,
 			        read: false
 		    });
+		    await AdminNotification.create({
+			        title: "💳 Deposit Completed",
+			        message: `${user.username} deposited KSh ${payment.amount}.`,
+			        type: "deposit",
+			        action: "ownerWallet"
+		    });
 
                 console.log(
                     `✅ ${payment.amount} coins added to ${user.username}`
@@ -205,13 +223,27 @@ app.post("/callback", async (req, res) => {
 
         } else {
 
-            payment.status = "Failed";
-            await payment.save();
+		    payment.status = "Failed";
+		    await payment.save();
 
-            console.log(
-                `❌ Payment failed for ${payment.username}. ResultCode: ${callback.ResultCode}`
-            );
-        }
+		    await Notification.create({
+			            username: payment.username,
+			            title: "❌ Deposit Failed",
+			            message: "Your M-Pesa deposit was not completed. Please try again.",
+			            read: false
+			        });
+
+		    await AdminNotification.create({
+			            title: "❌ Deposit Failed",
+			            message: `${payment.username}'s deposit failed.`,
+			            type: "depositError",
+			            action: "ownerWallet"
+			        });
+
+		    console.log(
+			            `❌ Payment failed for ${payment.username}. ResultCode: ${callback.ResultCode}`
+			        );
+	}
 
         return res.json({
             ResultCode: 0,

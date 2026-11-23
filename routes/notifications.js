@@ -62,4 +62,26 @@ router.post("/markRead/:username", async (req, res) => {
 				    }
 
 });
+router.delete("/:id", async (req, res) => {
+
+	    try {
+
+		            await Notification.findByIdAndDelete(req.params.id);
+
+		            res.json({
+				                success: true
+				            });
+
+		        } catch (err) {
+
+				        console.error(err);
+
+				        res.json({
+						            success: false,
+						            message: "Server error."
+						        });
+
+				    }
+
+});
 module.exports = router;

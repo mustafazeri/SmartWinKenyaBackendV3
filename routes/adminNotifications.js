@@ -41,5 +41,31 @@ const User = require("../models/User");
 });
 
                                                                                                                                     });
+router.delete("/:id", async (req, res) => {
 
+	    const admin = await checkAdmin(req, res);
+	    if(!admin) return;
+
+	    try{
+
+		            await AdminNotification.findByIdAndDelete(
+				                req.params.id
+				            );
+
+		            res.json({
+				                success:true
+				            });
+
+		        }catch(err){
+
+				        console.error(err);
+
+				        res.json({
+						            success:false,
+						            message:"Server error."
+						        });
+
+				    }
+
+});
                                                                                                                                     module.exports = router;
