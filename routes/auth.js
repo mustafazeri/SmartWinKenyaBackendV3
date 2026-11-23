@@ -197,6 +197,15 @@ router.post("/resetPassword", async (req, res) => {
 							                message: "The information provided does not match our records."
 							            });
 				            }
+		    if (
+			        user.resetLockedUntil &&
+			        user.resetLockedUntil > new Date()
+		    ) {
+			        return res.json({
+					        success: false,
+					        message: "Too many failed attempts. Please try again later."
+					    });
+		    }
 
 		            const idMatches =
 			        await bcrypt.compare(
@@ -273,17 +282,7 @@ router.post("/resetPassword", async (req, res) => {
 			    });
 
 			        await user.save();
-await SecurityLog.create({
-	    username: user.username,
-	    event: "Password Reset",
-	    description: "Password was successfully reset."
-});
-			        return res.json({
-					        success: false,
-					        message: "The information provided does not match our records."
-					    });
 
-		    }
 				                return res.json({
 							                success: false,
 							                message: "The information provided does not match our records."
@@ -292,8 +291,6 @@ await SecurityLog.create({
 
 		            const hashedPassword =
 			                await bcrypt.hash(newPassword, 10);
-		    const hashedNationalId =
-			        await bcrypt.hash(nationalId, 10);
 
 		            user.password = hashedPassword;
 
@@ -302,6 +299,12 @@ await SecurityLog.create({
 	user.resetLockLevel = 0;
 		         
 	await user.save();
+		    await SecurityLog.create({
+			        username: user.username,
+			        event: "Password Reset",
+			        description: "Password was successfully reset."
+		    });
+
 		    await Notification.create({
 			        username: user.username,
 			        title: "🔒 Password Changed",
@@ -317,15 +320,6 @@ await SecurityLog.create({
 			        action: "userManagement",
 			        read: false
 		    });
-if (
-	    user.resetLockedUntil &&
-	    user.resetLockedUntil > new Date()
-) {
-	    return res.json({
-		            success: false,
-		            message: "Too many failed attempts. Please try again later."
-		        });
-}
 		            res.json({
 				                success: true,
 				                message: "Password reset successful."
