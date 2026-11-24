@@ -226,19 +226,9 @@ router.post("/resetPassword", async (req, res) => {
 					        message: "Too many failed attempts. Please try again later."
 					    });
 		    }
+if (user.phone !== phone) {
 
-		            const idMatches =
-			        await bcrypt.compare(
-					        nationalId,
-					        user.nationalId
-					    );
-
-		    if (
-			        user.phone !== phone ||
-			        !idMatches
-		    ) {
-
-			        user.failedResetAttempts += 1;
+	    user.failedResetAttempts += 1;
 
 			        if (
 					    (user.resetLockLevel === 0 && user.failedResetAttempts >= 5) ||
