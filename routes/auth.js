@@ -100,35 +100,32 @@ router.post("/login", async (req, res) => {
 
     try {
 
-        const { username, password } = req.body;
+        
+const { username, phone, password } = req.body;
 
 	    let user = await User.findOne({
 		        username
 	    });
 
 	    if (!user) {
-
-		        user = await User.findOne({
-				        phone: username
+		        return res.json({
+				        success: false,
+				        message: "User not found."
 				    });
+	    }
 
-		        if (user && user.isAdmin) {
+	    if (!user.isAdmin) {
+
+		        if (!phone || user.phone !== phone) {
 
 				        return res.json({
 						            success: false,
-						            message: "Administrator must log in using the username."
+						            message: "Incorrect phone number."
 						        });
 
 				    }
 
 	    }
-
-        if (!user) {
-            return res.json({
-                success: false,
-                message: "User not found."
-            });
-        }
 
         const ok = await bcrypt.compare(
             password,
