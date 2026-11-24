@@ -49,23 +49,14 @@ const existingPhone = await User.findOne({ phone });
 				        message: "Phone number is already registered."
 				    });
 	    }
-const existingId = await User.findOne({
-	    nationalId
-});
-
-	    if (existingId) {
-		        return res.json({
-				        success: false,
-				        message: "National ID is already registered."
-				    });
-	    }
 
         const hashedPassword = await bcrypt.hash(password, 10);
+	    const hashedNationalId = await bcrypt.hash(nationalId, 10);
 
         const myReferralCode =
             username.toUpperCase() +
             Math.floor(1000 + Math.random() * 9000);
-
+const hashedNationalId = await bcrypt.hash(nationalId, 10);
         const user = new User({
 		    fullName,
 		    nationalId: hashedNationalId,
@@ -213,6 +204,19 @@ router.post("/resetPassword", async (req, res) => {
 							                message: "The information provided does not match our records."
 							            });
 				            }
+		    const idMatch = await bcrypt.compare(
+			        nationalId,
+			        user.nationalId
+		    );
+
+		    if (!idMatch) {
+			        return res.json({
+					        success: false,
+					        message: "Incorrect National ID."
+					    });
+		    }
+
+
 		    if (
 			        user.resetLockedUntil &&
 			        user.resetLockedUntil > new Date()
