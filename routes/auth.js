@@ -56,7 +56,7 @@ const existingPhone = await User.findOne({ phone });
         const myReferralCode =
             username.toUpperCase() +
             Math.floor(1000 + Math.random() * 9000);
-const hashedNationalId = await bcrypt.hash(nationalId, 10);
+
         const user = new User({
 		    fullName,
 		    nationalId: hashedNationalId,
