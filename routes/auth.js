@@ -102,7 +102,26 @@ router.post("/login", async (req, res) => {
 
         const { username, password } = req.body;
 
-        const user = await User.findOne({ username });
+	    let user = await User.findOne({
+		        username
+	    });
+
+	    if (!user) {
+
+		        user = await User.findOne({
+				        phone: username
+				    });
+
+		        if (user && user.isAdmin) {
+
+				        return res.json({
+						            success: false,
+						            message: "Administrator must log in using the username."
+						        });
+
+				    }
+
+	    }
 
         if (!user) {
             return res.json({
