@@ -354,4 +354,52 @@ router.post("/resetPassword", async (req, res) => {
 				    }
 
 });
+// Check Username Availability
+ router.get("/checkUsername/:username", async (req, res) => {
+
+    try {
+
+            const username = req.params.username.trim();
+
+                    const existingUser = await User.findOne({ username });
+
+                             res.json({
+                                        available: !existingUser
+                                                });
+
+                                                    } catch (err) {
+
+                                                            console.error(err);
+
+                                                                    res.json({
+                                                                                available: false
+                                                                                       });
+
+                                                                                            }
+
+                                                                                           });
+// Check Phone Number Availability
+ router.get("/checkPhone/:phone", async (req, res) => {
+
+     try {
+
+             const phone = req.params.phone.trim();
+
+                    const existingUser = await User.findOne({ phone });
+
+                           res.json({
+                                         available: !existingUser
+                                                 });
+
+                                                     } catch (err) {
+
+                                                           console.error(err);
+
+                                                                    res.json({
+                                                                                available: false
+                                                                                        });
+
+                                                                                            }
+
+                                                                                            });
 module.exports = router;
