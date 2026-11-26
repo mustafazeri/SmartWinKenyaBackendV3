@@ -173,8 +173,15 @@ console.log("START GAME HIT");
 					    });
 
 		    }
-
-		            user.coins -= stake;
+console.log("START GAME USER:", {
+	    username: user.username,
+	    fullName: user.fullName,
+	    nationalId: user.nationalId,
+	    phone: user.phone,
+	    coins: user.coins
+});
+		         
+		user.coins -= stake;
 		            await user.save();
 		await OwnerTransaction.create({
 
