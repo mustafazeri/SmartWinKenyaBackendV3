@@ -526,24 +526,7 @@ exports.startDailyChallenge = async (req, res) => {
 		    user.lastDailyChallenge = new Date();
 
 		    await user.save();
-		    await Notification.create({
-			        username: user.username,
-			        title: "🏆 Daily Challenge Winner",
-			        message: game.mode === "daily"
-			            ? `Congratulations! You won today's Daily Challenge and earned ${reward} coins.`
-			            : `Congratulations! You won ${reward} coins.`,
-			        action: "wallet"
-		    });
-		    if (game.mode === "daily") {
-
-			        await AdminNotification.create({
-					        title: "🏆 Daily Challenge Winner",
-					        message: `${user.username} won today's Daily Challenge and earned ${reward} coins.`,
-					        type: "dailyChallenge",
-					        action: "ownerWallet"
-					    });
-
-		    }
+		    
 		    await OwnerTransaction.create({
 
 			        username,
