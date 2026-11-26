@@ -386,29 +386,37 @@ exports.answerQuestion = async (req, res) => {
 				                game.questions[game.currentQuestion]
 				            );
 
-		            res.json({
+		            const user = await User.findOne({
+				        username: game.username
+			    });
 
-				                success: true,
+		    res.json({
 
-				                finished: false,
+			        success: true,
 
-				                question: {
+			        finished: false,
 
-							                id: nextQuestion._id,
+			        correct: true,
 
-							                question: nextQuestion.question,
+			        balance: user.coins,
 
-							                options: nextQuestion.options,
+			        question: {
 
-timer: 20,
-							                number: game.currentQuestion + 1,
+					        id: nextQuestion._id,
 
-							                total: 10
+					        question: nextQuestion.question,
 
+					        options: nextQuestion.options,
 
-							            }
+					        timer: 20,
 
-				            });
+					        number: game.currentQuestion + 1,
+
+					        total: 10
+
+					    }
+
+		    });
 
 		        } catch (err) {
 
