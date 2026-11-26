@@ -525,7 +525,10 @@ exports.startDailyChallenge = async (req, res) => {
 
 		    user.lastDailyChallenge = new Date();
 
-		    await user.save();
+		    console.log("USER BEFORE SAVE:");
+		    console.log(user);
+
+		    await user.save();	
 		    
 		    await OwnerTransaction.create({
 
