@@ -975,4 +975,30 @@ router.get("/securityLog", async (req, res) => {
 				    }
 
 });
+// DEBUG ADMIN USER
+ router.get("/debugAdmin/:username", async (req, res) => {
+    try {
+             const User = require("../models/User");
+
+                    const user = await User.findOne({
+                               username: req.params.username
+                                      }).lean();
+
+                                                 if (!user) {
+                                                             return res.json({
+                                                                            success: false,
+                                                                                             message: "User not found"
+                                                                                                        });
+                                                                                                                 }
+
+                                                                                                                        res.json(user);
+
+                                                                                                                            } catch (err) {
+                                                                                                                                    console.error(err);
+                                                                                                                                            res.json({
+                                                                                                                                                       success: false,
+                                                                                                                                                                    message: err.message
+                                                                                                                                                                            });
+                                                                                                                                                                               }
+                                                                                                                                                                               });
 module.exports = router;
