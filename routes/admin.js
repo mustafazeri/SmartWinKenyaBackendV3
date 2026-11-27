@@ -1001,21 +1001,5 @@ router.get("/securityLog", async (req, res) => {
                                                                                                                                                                             });
                                                                                                                                                                                }
                                                                                                                                                                                });
-router.get("/fixAdmin", async (req, res) => {
 
-	    const User = require("../models/User");
-
-	    await User.updateOne(
-		            { username: "testuser" },
-		            {
-				                $set: {
-							                fullName: "Test User",
-							                nationalId: "12345678",
-							                phone: "0712345678"
-							            }
-				            }
-		        );
-
-	    res.json({ success: true });
-});
 module.exports = router;
