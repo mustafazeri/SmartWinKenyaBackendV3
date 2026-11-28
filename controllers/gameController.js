@@ -404,6 +404,7 @@ exports.answerQuestion = async (req, res) => {
 			        finished: false,
 
 			        correct: true,
+			    mode: game.mode,
 
 			        balance: user.coins,
 
